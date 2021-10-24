@@ -73,8 +73,8 @@ def zero_matrix(result):
   actual = [] 
   classified = []
   for i in result:
-    actual.append("Actual "+i)
-    classified.append("Classified "+i)
+    actual.append("Actual "+ str(i))
+    classified.append("Classified "+str(i))
   
   data = pd.DataFrame(data = zeros, index = actual, columns = classified)
 
@@ -85,7 +85,7 @@ def matrix(a,b, result):
   data = zero_matrix(result)
 
   for i, j in zip(a, b):
-    data["Classified "+i]["Actual "+j] = data["Classified "+i]["Actual "+j] + 1
+    data["Classified "+str(i)]["Actual "+str(j)] = data["Classified "+str(i)]["Actual "+str(j)] + 1
 
   return data
 
@@ -258,7 +258,6 @@ def C45(is_numeric, D, A, threshold, node, dict_):
 
         option_labels = ['le', 'gt']
         for i in range(len(option_labels)):
-          print("Option ", option_labels)
           if option_labels[i] == 'le':
             data = D[D[x] <= Ag]
           else:
