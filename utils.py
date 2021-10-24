@@ -34,8 +34,6 @@ def prepare_D(training_file, restrictions_list):
 
     return n, D, A
 
-
-
 def is_numeric(D): 
   numeric = {}
   for col in D.columns:
@@ -46,7 +44,6 @@ def is_numeric(D):
       numeric[col] = False 
 
   return numeric
-
 
 def find_result(list_, dict_): 
   result = ""
@@ -182,22 +179,22 @@ def cross_validation(is_numeric, D, A, n, threshold):
     correct += T
     accuracy.append(T/total)
     i +=1
-  
 
-#   print()
-  print("Overall Matrix: ")
+  print(final_dict)
 
-  overall_matrix = zero_matrix(result)
-  for i in matrix:
-    overall_matrix = overall_matrix.add(i, fill_value=0)
-  print(overall_matrix)
+  # print("Overall Matrix: ")
 
-  print()
-  print("Totals: ")
-  #print("Total Number of records classified: ", total_amt)
-  print("Overall Accuracy: ", correct/total_amt)
-  print("Individual accuracies: ", accuracy)
-  print("Average accuracy: ", sum(accuracy)/len(accuracy))
+  # overall_matrix = zero_matrix(result)
+  # for i in matrix:
+  #   overall_matrix = overall_matrix.add(i, fill_value=0)
+  # print(overall_matrix)
+
+  # print()
+  # print("Totals: ")
+  # #print("Total Number of records classified: ", total_amt)
+  # print("Overall Accuracy: ", correct/total_amt)
+  # print("Individual accuracies: ", accuracy)
+  # print("Average accuracy: ", sum(accuracy)/len(accuracy))
 
 
 def json_file_to_dict(json_file): 
@@ -218,7 +215,6 @@ def C45(is_numeric, D, A, threshold, node, dict_):
     else: 
       a = attr 
 
-
     leaf_dict = {"leaf": {"decision": a, "p":1}}
     return leaf , leaf_dict   
 
@@ -232,7 +228,12 @@ def C45(is_numeric, D, A, threshold, node, dict_):
     
   else:
     # print("Not Homogen 2")
-    Ag = selectSplittingAttribute(is_numeric, A,D,threshold)
+    print("is_numeric: ", is_numeric, "A: ", A, "D: ", D, "threshold: ", threshold)
+    Ag, x = selectSplittingAttribute(is_numeric, A,D,threshold)
+    print(Ag)
+    #maybe try and except check here?
+   
+
     if Ag == None:
       c, p = find_most_frequent_label(D)
       leaf = Leaf(1,c)
@@ -241,29 +242,59 @@ def C45(is_numeric, D, A, threshold, node, dict_):
       return leaf, leaf_dict 
 
     else:
-      node = Normal(Ag)
-      node_dict = {"node": { "var": Ag,"edges": []}}
+      #A.remove(Ag)
+      print()
+      print("A: ", A)
+      print("Ag: ", Ag)
+      print("X: ", x)
+      print()
+      try:
+        A.remove(Ag)
+      except:
+        #D.drop(D.index[D[x] == Ag], inplace = True)
+        D = D.replace(Ag, np.NaN) #replace value with NaN
+        node = Normal(Ag)
+        node_dict = {"node": { "var": x,"edges": []}}
 
-      labels = list(D[Ag])
-      option_labels = list(set(labels))
-      A.remove(Ag)
+        option_labels = ['le', 'gt']
+        for i in range(len(option_labels)):
+          print("Option ", option_labels)
+          if option_labels[i] == 'le':
+            data = D[D[x] <= Ag]
+          else:
+            data = D[D[x] > Ag]
+        
+          if (data.empty):
+            continue 
 
-      for i in range(len(option_labels)):
-        try:
-          data = D.loc[(D[Ag] == option_labels[i])] 
-        except:
-          continue
-        else:
+          print("C45 ", data)
           child, child_dict = C45(is_numeric, data, A, threshold, node, dict_) 
           edge = Edge(option_labels[i], child)
 
-          # EDGE CHANGES BASED ON NUMERIC 
-          # if is_numeric 
-
-          edge_dict = {"edge": {"value": option_labels[i], "node": child_dict}}
+          edge_dict = {"edge": {"value": Ag, "direction": option_labels[i], "node": child_dict}}
           node.edges.append(edge)
           node_dict["node"]['edges'].append(edge_dict)
-        #   print("threshold 3", threshold)
+
+      else:
+        node = Normal(Ag)
+        node_dict = {"node": { "var": Ag,"edges": []}}
+
+        labels = list(D[Ag])
+        option_labels = list(set(labels))
+
+        for i in range(len(option_labels)):
+          try:
+            data = D.loc[(D[Ag] == option_labels[i])] 
+          except:
+            continue
+          else:
+            child, child_dict = C45(is_numeric, data, A, threshold, node, dict_) 
+            edge = Edge(option_labels[i], child)
+
+            edge_dict = {"edge": {"value": option_labels[i], "node": child_dict}}
+            node.edges.append(edge)
+            node_dict["node"]['edges'].append(edge_dict)
+          #   print("threshold 3", threshold)
 
   # print("tree {}".format(node_dict))
   return node, node_dict
@@ -325,84 +356,127 @@ def find_most_frequent_label(D):
   return label, percentage
 
 def selectSplittingAttribute(is_numeric, A,D,threshold):
-  
   gain = []
-  for a in A: 
-    gain.append(findBestSplit(a, D))
-
-  best = max(gain)
-
-  # NOT SURE IF THIS CODE STILL STANDS 
-  if best > threshold:
-    x = A[gain.index(max(gain))]
-    return x
-  else:
-    return None
-
-  
-def info_gain_numeric(a, D):
-  # HOW DO YOU FIND THIS 
-  pass  
-
-def findBestSplit(is_numeric, a, D):
-
-  if is_numeric[a]: 
-    unique = D[a].unique()
-    all_info_gains = []
-    for num in unique: 
-      gain = info_gain_numeric(a, D)
-      all_info_gains.append(gain)
-
-    return max(all_info_gains)
-
-  else: 
-    p0, option_labels = first_entropy(D, D.columns[-1])
-    pA = entropy(D, a, D.columns[-1])
-    return p0 - pA
-
-
-  exit()
-
-
-
-
-
-
-def selectSplittingAttribute_part1(A,D,threshold):
-  gain = []
+  check = []
   p0, option_labels = first_entropy(D, D.columns[-1])
+  print("p0: ", p0)
+  pA = 0
+  print("Is_numeric: ", is_numeric)
+  print("A: ", A)
   for i in range(len(A)):
-    pA = entropy(D, A[i], D.columns[-1])
-    gain.append(p0 - pA) 
-  best = max(gain)
-
-  if best > threshold:
-    x = A[gain.index(max(gain))]
-    return x
-  else:
-    return None
-
-
-# def findBestSplit(a, D):
-#   #  Questions: 
-#   # 1.) What does ascending order look like for D
-#   # 2.) what is alpha 
-#   counts = [[]]
-#   Gain = []
-#   alpha = []
-#   p0 = first_entropy(D, A)
-#   D = D.sort_values(by=[a], ascending = True) # ascending = True or False?
-#   print(D)
-#   for i in range(1, len(D)): 
-#     d = D[a][i] # go into data point , check this 
-#     print("d", d)
+    if is_numeric[A[i]] == True:
+      print()
+      x, pA = findBestSplit(D.columns[-1], A[i], D) #returns best splitting attribute and calculated pA
+      print("X: ", x)
+      print("pA: ", pA)
+      print()
+    else:
+      pA = entropy(D, A[i], D.columns[-1])
+      x = 'category'
     
-#     for j in range(k): 
-#       j+=1 
-#     i+=1 
+    check.append(x)
+    gain.append(p0 - pA) 
+  
+  print("Check: ", check)
+  print("Gain: ", gain)
+  
+  best = max(gain)
+  if best > threshold:
+    mx = A[gain.index(best)]
+    print("mx", mx)
+    x = check[gain.index(best)]
+    print("x", x)
+    if x != 'category':
+      return x, mx
+    else:
+      return mx, x
+  else:
+    return None, None
+  
+
+  
+  
+
+  # for i in range(len(A)):
+  #   if (D[A[i]].iloc[0] == str(D[A[i]].iloc[0])):  
+  #     if D[A[i]].iloc[0].isnumeric(): 
+  #       D[A[i]] = pd.to_numeric(D[A[i]])
+  #       x = findBestSplit(A[i], D)
+  #       sys.exit()
+  #       pA = entropy(D, A[i], D.columns[-1])
+  #     else:
+  #       pA = entropy(D, A[i], D.columns[-1])
+  #   elif D[A[i]].iloc[0].is_integer():
+  #     x = findBestSplit(A[i], D)
+  #     sys.exit()
+  #     pA = entropy(D, A[i], D.columns[-1])
+  #   gain.append(p0 - pA) 
+  # best = max(gain)
+  # if best > threshold:
+  #   x = A[gain.index(max(gain))]
+  #   return x
+  # else:
+  #   return None
 
 
-#   pass 
+def findBestSplit(A, a, D):
+  entropy1, option_labels = first_entropy(D, A)
+  if (a == A):
+    return entropy1
+
+  pd.to_numeric(D.loc[:, a])
+  print(D[a])
+  labels2 = D[a].value_counts().index.tolist()
+  labels2.sort()
+  option_labels2 = labels2
+  print("OL2: ", option_labels2)
+
+  track_lab = [] #label tracker so we can send back the one that has the best entropy 
+  track_entro = []
+
+  print("First Entropy", entropy1)
+  print("A: ", a)
+  for i in range (len(option_labels2)): 
+    entropy = 0
+    for j in range (len(option_labels)): 
+      label = option_labels2[i]
+      total = int((D[a] == label).sum())
+      ratio_1 = len(D.loc[(D[a] == label) & (D[A] == option_labels[j]) ].index) / total
+      entropy = entropy + log(ratio_1)
+    print("Label: ", label, "Entropy: ", entropy)
+    track_lab.append(label)
+    track_entro.append(entropy)
+    #overall = overall + (total/len(D[a])) * entropy  #I dont think we need to do anymore 
+  best = max(track_entro)
+  o_label = track_lab[track_entro.index(best)]
+  mx_v = best
+  return o_label, mx_v 
+
+
+
+  # #  Questions: 
+  # # 1.) What does ascendin g order look like for D
+  # # 2.) what is alpha 
+  # print("A", a)
+  # counts = [[]]
+  # Gain = []
+  # alpha = []
+  # p0 = first_entropy(D, a) #we might need to change this 
+  # D = D.sort_values(by=[a], ascending = True) # ascending = True or False?
+  # D= D.reset_index(drop=True)
+  # for i in range(1, len(D)): 
+  #   d = D.iloc[i-1].to_list()
+  #   alpha.append(d[0])
+  #   print("Alpha: ", alpha)
+  #   exit()
+  #    # go into data point , check this   
+  #   for j in range(len(k)):
+  #     continue 
+  # for l in range(1, len(D)):
+  #   Gain[l] = p0 - entropy(D, a, counts) #some "magic" has been hidden inside the call of the entropy(D,Ai, (counts_1[l],...,counts_k[l]))  
+  #                                        #function (we are passing it the distribution of the class labels on the "left" side of the split, 
+  #                                        #the function needs to construct the distribution of labels on the "right" side of the split from the data passed into it)..
+  # pass 
 
 def first_entropy(D, A):
   labels = list(D[A])
@@ -438,9 +512,12 @@ def log(A):
     x = 0
   return -((A) * x)
 
-def check_home(D, A): 
+def check_home(D, A):
+  print("Check_hom ", check_home) 
   d = D[[D.columns[-1]]]
+  print("d ", d)
   results = d.value_counts().index.to_list()
+  print("results ", results)
   if len(results) > 1: 
     return False, False 
   else: 
