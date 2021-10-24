@@ -7,6 +7,7 @@ import numpy as np
 def prepare_D(training_file, restrictions_list): 
     data = pd.read_csv(training_file)
     D = pd.DataFrame(data) #See if you want to do a multi-hot encoding structure for ease of use 
+    n = is_numeric(D)
     value = D.iloc[1][0]
     numbers_list = D.copy()
     numbers_list = list(numbers_list.iloc[0])
@@ -31,7 +32,21 @@ def prepare_D(training_file, restrictions_list):
     # print("A\n", A)
     # print("class in D before C45\n ", D["class"].unique())
 
-    return D, A
+    return n, D, A
+
+
+
+def is_numeric(D): 
+  numeric = {}
+  for col in D.columns:
+    if int(D.at[0,col]) == 0: 
+
+      numeric[col] = True 
+    else: 
+      numeric[col] = False 
+
+  return numeric
+
 
 def find_result(list_, dict_): 
   result = ""
@@ -114,7 +129,7 @@ def classifier(D, raw):
   
   return records, data, result
 
-def cross_validation(D, A, n, threshold):
+def cross_validation(is_numeric, D, A, n, threshold):
 #   print("cross val func", D["class"].unique()) 
   matrix = []
   D = D.sample(frac = 1).reset_index(drop=True)
@@ -150,7 +165,7 @@ def cross_validation(D, A, n, threshold):
     dict_ = {}
     Attributes = A.copy()
 
-    node, final_dict = C45(send_C45, Attributes, threshold, before_node, dict_)
+    node, final_dict = C45(is_numeric, send_C45, Attributes, threshold, before_node, dict_)
 
     total, data, result = classifier(send_rec, final_dict)
     lst = data.values.tolist()
@@ -191,7 +206,7 @@ def json_file_to_dict(json_file):
     return data 
 
 
-def C45(D, A, threshold, node, dict_):
+def C45(is_numeric, D, A, threshold, node, dict_):
 #   print("threshold 2", threshold)
   best = []
   bol, attr = check_home(D, A)
@@ -217,7 +232,7 @@ def C45(D, A, threshold, node, dict_):
     
   else:
     # print("Not Homogen 2")
-    Ag = selectSplittingAttribute(A,D,threshold)
+    Ag = selectSplittingAttribute(is_numeric, A,D,threshold)
     if Ag == None:
       c, p = find_most_frequent_label(D)
       leaf = Leaf(1,c)
@@ -239,8 +254,11 @@ def C45(D, A, threshold, node, dict_):
         except:
           continue
         else:
-          child, child_dict = C45(data, A, threshold, node, dict_) 
+          child, child_dict = C45(is_numeric, data, A, threshold, node, dict_) 
           edge = Edge(option_labels[i], child)
+
+          # EDGE CHANGES BASED ON NUMERIC 
+          # if is_numeric 
 
           edge_dict = {"edge": {"value": option_labels[i], "node": child_dict}}
           node.edges.append(edge)
@@ -306,23 +324,85 @@ def find_most_frequent_label(D):
   # print("label 2", df[max_column].sum())
   return label, percentage
 
-def selectSplittingAttribute(A,D,threshold):
+def selectSplittingAttribute(is_numeric, A,D,threshold):
+  
+  gain = []
+  for a in A: 
+    gain.append(findBestSplit(a, D))
+
+  best = max(gain)
+
+  # NOT SURE IF THIS CODE STILL STANDS 
+  if best > threshold:
+    x = A[gain.index(max(gain))]
+    return x
+  else:
+    return None
+
+  
+def info_gain_numeric(a, D):
+  # HOW DO YOU FIND THIS 
+  pass  
+
+def findBestSplit(is_numeric, a, D):
+
+  if is_numeric[a]: 
+    unique = D[a].unique()
+    all_info_gains = []
+    for num in unique: 
+      gain = info_gain_numeric(a, D)
+      all_info_gains.append(gain)
+
+    return max(all_info_gains)
+
+  else: 
+    p0, option_labels = first_entropy(D, D.columns[-1])
+    pA = entropy(D, a, D.columns[-1])
+    return p0 - pA
+
+
+  exit()
+
+
+
+
+
+
+def selectSplittingAttribute_part1(A,D,threshold):
   gain = []
   p0, option_labels = first_entropy(D, D.columns[-1])
   for i in range(len(A)):
     pA = entropy(D, A[i], D.columns[-1])
     gain.append(p0 - pA) 
   best = max(gain)
-#   print("best", best)
-#   print(type(best))
-#   print("threshold", threshold)
-#   print(type(threshold))
-  # print("Best: ", best)
+
   if best > threshold:
     x = A[gain.index(max(gain))]
     return x
   else:
     return None
+
+
+# def findBestSplit(a, D):
+#   #  Questions: 
+#   # 1.) What does ascending order look like for D
+#   # 2.) what is alpha 
+#   counts = [[]]
+#   Gain = []
+#   alpha = []
+#   p0 = first_entropy(D, A)
+#   D = D.sort_values(by=[a], ascending = True) # ascending = True or False?
+#   print(D)
+#   for i in range(1, len(D)): 
+#     d = D[a][i] # go into data point , check this 
+#     print("d", d)
+    
+#     for j in range(k): 
+#       j+=1 
+#     i+=1 
+
+
+#   pass 
 
 def first_entropy(D, A):
   labels = list(D[A])

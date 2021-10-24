@@ -8,29 +8,33 @@ from utils import *
 def main():
     # python3 validation.py <TrainingSetFile.csv> [<restrictionsFile>]
 
-  print("Select a number indicating the training file:")
-  print("\t 1 = openHouses.csv\n\t 2 = adult-stretch.csv\n\t 3 = adult+stretch.csv\n\t 4 = yellow-small.csv\n\t 5 = yellow-small+adult-stretch.csv \n\t 6 = agaricus-lepiota.csv \n\t 7 = nursery.csv \n")
-  training_file = int(input(""))
-  if training_file == 1: 
-    training_file = "openHouses.csv" 
-  elif training_file == 2: 
-    training_file = "adult-stretch.csv"
-  elif training_file == 3: 
-    training_file = "adult+stretch.csv"
-  elif training_file == 4: 
-    training_file = "yellow-small.csv"
-  elif training_file == 5: 
-    training_file = "yellow-small+adult-stretch.csv"
-  elif training_file == 6: 
-    training_file = "agaricus-lepiota.csv"
-  else: 
-      training_file = "nursery.csv" 
+  # print("Select a number indicating the training file:")
+  # print("\t 1 = openHouses.csv\n\t 2 = adult-stretch.csv\n\t 3 = adult+stretch.csv\n\t 4 = yellow-small.csv\n\t 5 = yellow-small+adult-stretch.csv \n\t 6 = agaricus-lepiota.csv \n\t 7 = nursery.csv \n")
+  # training_file = int(input(""))
+  # if training_file == 1: 
+  #   training_file = "openHouses.csv" 
+  # elif training_file == 2: 
+  #   training_file = "adult-stretch.csv"
+  # elif training_file == 3: 
+  #   training_file = "adult+stretch.csv"
+  # elif training_file == 4: 
+  #   training_file = "yellow-small.csv"
+  # elif training_file == 5: 
+  #   training_file = "yellow-small+adult-stretch.csv"
+  # elif training_file == 6: 
+  #   training_file = "agaricus-lepiota.csv"
+  # else: 
+  #     training_file = "nursery.csv" 
 
-  print("training file {}".format(training_file))
+  # print("training file {}".format(training_file))
 
-  #restriction_file = input("Restrictions File: ")
-  threshold = float(input("Threshold: "))
-  n = int(input("n folds: "))
+  # #restriction_file = input("Restrictions File: ")
+  # threshold = float(input("Threshold: "))
+  # n = int(input("n folds: "))
+
+  threshold = 0.2 
+  n = 1
+  training_file = "iris.data.csv"
   
     # argumentList = sys.argv[1:]
     # training_file = argumentList[0]
@@ -49,8 +53,9 @@ def main():
 
   restrictions_list = []
 
-  D, A = prepare_D(training_file, restrictions_list)
-  cross_validation(D, A, n, threshold)
+  is_numeric, D, A = prepare_D(training_file, restrictions_list)
+
+  cross_validation(is_numeric, D, A, n, threshold)
 
 
 main()

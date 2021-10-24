@@ -68,6 +68,7 @@ def prepare_D(training_file, restrictions_list):
 
 
 def C45(D, A, threshold, node, dict_):
+  print("C45")
   best = []
   bol, attr = check_home(D, A)
 
@@ -88,7 +89,7 @@ def C45(D, A, threshold, node, dict_):
     return leaf , leaf_dict 
     
   else:
-    # print("Not Homogen 2")
+    print("Not Homogen 2")
     Ag = selectSplittingAttribute(A,D,threshold);
     if Ag == None:
       c, p = find_most_frequent_label(D)
