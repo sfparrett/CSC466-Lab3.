@@ -32,9 +32,11 @@ def main():
   # threshold = float(input("Threshold: "))
   # n = int(input("n folds: "))
 
-  threshold = 0.2
-  n = 1
-  training_file = "Extra_Example.csv"
+  threshold = 0.1
+  n = 0
+  #training_file = "iris.data.copy.csv"
+  # clean None v
+  training_file = "winequality-red-fixed.csv"
   
     # argumentList = sys.argv[1:]
     # training_file = argumentList[0]
@@ -54,6 +56,11 @@ def main():
   restrictions_list = []
 
   is_numeric, D, A = prepare_D(training_file, restrictions_list)
+
+  # CLEAN DATA SET 
+  D.dropna()
+  for i in D.columns:
+    D.drop(D.loc[D[i] == "?"].index, inplace=True)
 
   cross_validation(is_numeric, D, A, n, threshold)
 

@@ -44,27 +44,61 @@ def is_numeric(D):
 
   return numeric
 
-def find_result(list_, dict_): 
-  print("Dict")
-  print(dict_)
-  sys.exit()
+def find_result(attributes, list_, dict_): 
+  print("\n")
+  print("dict_", dict_)
+
   result = ""
   if "node" in  dict_.keys():
     node = dict_["node"]
-    result = find_result(list_,node)
+    # print("node ", node)
+    result = find_result(attributes, list_,node)
   elif "leaf" in  dict_.keys():
+    print("leaf ", dict_['leaf']['decision'])
     return dict_['leaf']['decision']
     
   elif "edges" in  dict_.keys():
+    print("numerical edges")
     edges = dict_["edges"]
-    for edge in edges: 
-      if edge['edge']['value'] in list_: 
-        edge_of_interest = edge['edge']
-        if "leaf" in edge_of_interest.keys():
-          return  edge['edge']['leaf']['decision']
-        else: 
-          result = find_result(list_,edge_of_interest["node"])
 
+    first_edge = edges[0]['edge']
+    if "direction" in first_edge:
+      
+      edge_value = first_edge["value"]
+      print("edge value ", edge_value, type(edge_value))
+      second_edge = edges[1]['edge']
+      attribute = dict_["var"]
+      print("attribute ", attribute, type(attribute))
+
+      passed_in_value = float(list_[attributes.index(attribute)])
+      print("passed in value ", passed_in_value, type(passed_in_value))
+      print("first value\n", first_edge)
+      print("second value\n", second_edge)
+
+      if passed_in_value <= edge_value:
+        if first_edge["direction"] == "le": 
+          result =  find_result(attributes, list_, first_edge["node"])
+        else: 
+          result =  find_result(attributes, list_,second_edge["node"])
+          
+      else: # greater than 
+        if first_edge["direction"] == "gt": 
+          result =  find_result(attributes, list_, first_edge["node"])
+        else: 
+          result =  find_result(attributes, list_,second_edge["node"])
+
+    else: 
+      # print("categorical edges")
+      for edge in edges: 
+        if edge['edge']['value'] in list_: 
+          edge_of_interest = edge['edge']
+          if "leaf" in edge_of_interest.keys():
+            return  edge['edge']['leaf']['decision']
+          else: 
+            result = find_result(attributes, list_,edge_of_interest["node"])
+
+      
+  # print("RESULT {}".format(result))
   return result 
 
 def zero_matrix(result):
@@ -76,11 +110,15 @@ def zero_matrix(result):
   actual = [] 
   classified = []
   for i in result:
-    actual.append("Actual "+ i)
-    classified.append("Classified "+ i)
+    print("i ", i)
+    print(type(i))
+    actual.append("A "+ str(i))
+    classified.append("C "+ str(i))
+    # actual.append("Actual "+ str(i))
+    # classified.append("Classified "+ str(i))
   
   data = pd.DataFrame(data = zeros, index = actual, columns = classified)
-
+  pd.set_option('display.max_columns', None)
   print("Zero Matrix: ")
   print(data)
 
@@ -91,21 +129,40 @@ def matrix(a,b, result):
   data = zero_matrix(result)
 
   for i, j in zip(a, b):
-    data["Classified "+ i]["Actual "+ j] = data["Classified "+ i ]["Actual "+ j] + 1
+    data["C "+ str(i)]["A "+ str(j)] = data["C "+ str(i) ]["A "+ str(j)] + 1
+    #data["Classified "+ str(i)]["Actual "+ str(j)] = data["Classified "+ str(i) ]["Actual "+ str(j)] + 1
+
 
   return data
 
 def classifier(D, raw):
-#   print("classifier func", D["class"].unique()) 
+  
+  json_filename = "json_out"
+  f = open(json_filename, "w")
+  json.dump(raw, f)
+  f.close()
+
   objects = list(D[D.columns[-1]])
   object_type = list(set(objects))
+  attributes = list(D.iloc[:1])
+  print("UNIQUE VALUES\n", D[attributes[-1]].unique()) # [6. 7. 5. 4. 8. 3.]
 
   overall = []
   records = len(D)
+  print("RESULTS: ")
   for index, row in D.iterrows():
     passed_row = row.tolist()
-    result = find_result(passed_row, raw)
+    if len(attributes) != len(passed_row): 
+      print("ERROR")
+      sys.exit()
+    #passed_row = [ 6.9,1.09,0.06,2.1,0.061,12,31,0.9948,3.51,0.43,11.4,4] #4
+    #passed_row = [7.1,1.5,0.01,5.7,0.082,3,14,0.99808,3.4,0.52,11.2,3] #3
+    result = find_result(attributes, passed_row, raw)
+    print("result ", result)
+    # sys.exit()
     overall.append(result)
+    
+
   
 
   x = D[D.columns[-1]].to_list()
@@ -224,48 +281,29 @@ def C45(is_numeric, D, A, threshold, node, dict_):
       a = attr[0]
     else: 
       a = attr 
-
     leaf_dict = {"leaf": {"decision": a, "p":1}}
     return leaf , leaf_dict   
 
   elif not A:
-    # print("Not Homogen 1")
     c, p = find_most_frequent_label(D)
     leaf = Leaf(1,c)
-
     leaf_dict = {"leaf": {"decision": c, "p": p}}
     return leaf , leaf_dict 
     
   else:
-    # print("Not Homogen 2")
-    #print("is_numeric: ", is_numeric, "A: ", A, "D: ", D, "threshold: ", threshold)
     Ag, x = selectSplittingAttribute(is_numeric, A,D,threshold)
-    #print(Ag)
-    #maybe try and except check here?
-   
-
     if Ag == None:
       c, p = find_most_frequent_label(D)
       leaf = Leaf(1,c)
-
       leaf_dict = {"leaf": {"decision": c, "p": p}}
       return leaf, leaf_dict 
 
     else:
-      #A.remove(Ag)
-      #print()
-      #print("A: ", A)
-      #print("Ag: ", Ag)
-      #print("X: ", x)
-      #print()
       try:
         A.remove(Ag)
       except:
-        #D.drop(D.index[D[x] == Ag], inplace = True)
-        #D = D.replace(Ag, np.NaN) #replace value with NaN
         node = Normal(Ag)
         node_dict = {"node": { "var": x,"edges": []}}
-
         option_labels = ['le', 'gt']
         for i in range(len(option_labels)):
           if option_labels[i] == 'le':
@@ -274,20 +312,26 @@ def C45(is_numeric, D, A, threshold, node, dict_):
             data = D[D[x] > Ag]
         
           if (data.empty):
-            continue 
+            #continue
+            # NEW GHOST PATHS CODE 
+            c, p = find_most_frequent_label(D)
+            leaf = Leaf(1,c)
+            leaf_dict = {"leaf": {"decision": c, "p": p}}
+            return leaf, leaf_dict  
+            #########################
 
-          #print("C45 ", data)
           child, child_dict = C45(is_numeric, data, A, threshold, node, dict_) 
           edge = Edge(option_labels[i], child)
 
-          edge_dict = {"edge": {"value": Ag, "direction": option_labels[i], "node": child_dict}}
+          edge_dict = {"edge": {"value": float(Ag), "direction": option_labels[i], "node": child_dict}}
           node.edges.append(edge)
           node_dict["node"]['edges'].append(edge_dict)
+
 
       else:
         node = Normal(Ag)
         node_dict = {"node": { "var": Ag,"edges": []}}
-
+        
         labels = list(D[Ag])
         option_labels = list(set(labels))
 
