@@ -27,7 +27,6 @@ def prepare_D(training_file, restrictions_list):
         i+=1 
 
     D = D[[c for c in D if c not in ignore_list] + [value]]
-    # print("D\n", D)
     A = list(D)
     # print("A\n", A)
     # print("class in D before C45\n ", D["class"].unique())
@@ -46,6 +45,9 @@ def is_numeric(D):
   return numeric
 
 def find_result(list_, dict_): 
+  print("Dict")
+  print(dict_)
+  exit()
   result = ""
   if "node" in  dict_.keys():
     node = dict_["node"]
@@ -67,16 +69,20 @@ def find_result(list_, dict_):
 
 def zero_matrix(result):
   zeros = []
+  print(result)
   for i in range(len(result)):
     zeros.append([0]*len(result))
 
   actual = [] 
   classified = []
   for i in result:
-    actual.append("Actual "+ str(i))
-    classified.append("Classified "+str(i))
+    actual.append("Actual "+ i)
+    classified.append("Classified "+ i)
   
   data = pd.DataFrame(data = zeros, index = actual, columns = classified)
+
+  print("Zero Matrix: ")
+  print(data)
 
   return data
 
@@ -85,7 +91,7 @@ def matrix(a,b, result):
   data = zero_matrix(result)
 
   for i, j in zip(a, b):
-    data["Classified "+str(i)]["Actual "+str(j)] = data["Classified "+str(i)]["Actual "+str(j)] + 1
+    data["Classified "+ i]["Actual "+ j] = data["Classified "+ i ]["Actual "+ j] + 1
 
   return data
 
@@ -100,16 +106,12 @@ def classifier(D, raw):
     passed_row = row.tolist()
     result = find_result(passed_row, raw)
     overall.append(result)
+  
 
   x = D[D.columns[-1]].to_list()
   data = {'Predicted': overall, "Real": x}
   df = pd.DataFrame(data)
-#   print("Classifier func D\n", df)
-#   print("Real", df["Real"].unique()) 
-#   print("Predicted", df["Predicted"].unique())
-#   exit()
-
-  # print("Result:{}\n".format(df))
+  print(df)
 
   a = df['Predicted'].to_list()
   b = df['Real'].to_list()
@@ -117,6 +119,10 @@ def classifier(D, raw):
   result = df['Real'].value_counts().index.to_list()
   result2 = df['Predicted'].value_counts().index.to_list()
 
+  print("Real vs. Predicted")
+  print(result)
+  print(result2)
+  print()
   for i in result2:
     if (i not in result):
       result.append(i)
@@ -153,6 +159,8 @@ def cross_validation(is_numeric, D, A, n, threshold):
 
     send_rec = D.loc[total_amt:end].reset_index(drop=True)
 
+    print(send_rec)
+
     if (n == 1):
       send_C45 = send_rec
     else:
@@ -163,6 +171,10 @@ def cross_validation(is_numeric, D, A, n, threshold):
     Attributes = A.copy()
 
     node, final_dict = C45(is_numeric, send_C45, Attributes, threshold, before_node, dict_)
+
+    print()
+    print("Final: ")
+    print(final_dict)
 
     total, data, result = classifier(send_rec, final_dict)
     lst = data.values.tolist()
@@ -180,21 +192,19 @@ def cross_validation(is_numeric, D, A, n, threshold):
     accuracy.append(T/total)
     i +=1
 
-  print(final_dict)
+  print("Overall Matrix: ")
 
-  # print("Overall Matrix: ")
+  overall_matrix = zero_matrix(result)
+  for i in matrix:
+    overall_matrix = overall_matrix.add(i, fill_value=0)
+  print(overall_matrix)
 
-  # overall_matrix = zero_matrix(result)
-  # for i in matrix:
-  #   overall_matrix = overall_matrix.add(i, fill_value=0)
-  # print(overall_matrix)
-
-  # print()
-  # print("Totals: ")
-  # #print("Total Number of records classified: ", total_amt)
-  # print("Overall Accuracy: ", correct/total_amt)
-  # print("Individual accuracies: ", accuracy)
-  # print("Average accuracy: ", sum(accuracy)/len(accuracy))
+  print()
+  print("Totals: ")
+  #print("Total Number of records classified: ", total_amt)
+  print("Overall Accuracy: ", correct/total_amt)
+  print("Individual accuracies: ", accuracy)
+  print("Average accuracy: ", sum(accuracy)/len(accuracy))
 
 
 def json_file_to_dict(json_file): 
@@ -228,9 +238,9 @@ def C45(is_numeric, D, A, threshold, node, dict_):
     
   else:
     # print("Not Homogen 2")
-    print("is_numeric: ", is_numeric, "A: ", A, "D: ", D, "threshold: ", threshold)
+    #print("is_numeric: ", is_numeric, "A: ", A, "D: ", D, "threshold: ", threshold)
     Ag, x = selectSplittingAttribute(is_numeric, A,D,threshold)
-    print(Ag)
+    #print(Ag)
     #maybe try and except check here?
    
 
@@ -243,16 +253,16 @@ def C45(is_numeric, D, A, threshold, node, dict_):
 
     else:
       #A.remove(Ag)
-      print()
-      print("A: ", A)
-      print("Ag: ", Ag)
-      print("X: ", x)
-      print()
+      #print()
+      #print("A: ", A)
+      #print("Ag: ", Ag)
+      #print("X: ", x)
+      #print()
       try:
         A.remove(Ag)
       except:
         #D.drop(D.index[D[x] == Ag], inplace = True)
-        D = D.replace(Ag, np.NaN) #replace value with NaN
+        #D = D.replace(Ag, np.NaN) #replace value with NaN
         node = Normal(Ag)
         node_dict = {"node": { "var": x,"edges": []}}
 
@@ -266,7 +276,7 @@ def C45(is_numeric, D, A, threshold, node, dict_):
           if (data.empty):
             continue 
 
-          print("C45 ", data)
+          #print("C45 ", data)
           child, child_dict = C45(is_numeric, data, A, threshold, node, dict_) 
           edge = Edge(option_labels[i], child)
 
@@ -358,17 +368,18 @@ def selectSplittingAttribute(is_numeric, A,D,threshold):
   gain = []
   check = []
   p0, option_labels = first_entropy(D, D.columns[-1])
-  print("p0: ", p0)
+  #print("p0: ", p0)
   pA = 0
-  print("Is_numeric: ", is_numeric)
-  print("A: ", A)
+  #print("Is_numeric: ", is_numeric)
+  #print("A: ", A)
   for i in range(len(A)):
     if is_numeric[A[i]] == True:
-      print()
+      #print()
       x, pA = findBestSplit(D.columns[-1], A[i], D) #returns best splitting attribute and calculated pA
-      print("X: ", x)
-      print("pA: ", pA)
-      print()
+      #entropy x <= 3 < x 
+      #print("X: ", x)
+      #print("pA: ", pA)
+      #print()
     else:
       pA = entropy(D, A[i], D.columns[-1])
       x = 'category'
@@ -376,15 +387,15 @@ def selectSplittingAttribute(is_numeric, A,D,threshold):
     check.append(x)
     gain.append(p0 - pA) 
   
-  print("Check: ", check)
-  print("Gain: ", gain)
+  #print("Check: ", check)
+  #print("Gain: ", gain)
   
   best = max(gain)
   if best > threshold:
     mx = A[gain.index(best)]
-    print("mx", mx)
+    #print("mx", mx)
     x = check[gain.index(best)]
-    print("x", x)
+    #print("x", x)
     if x != 'category':
       return x, mx
     else:
@@ -417,6 +428,28 @@ def selectSplittingAttribute(is_numeric, A,D,threshold):
   # else:
   #   return None
 
+def compute_e(overall_r_1, overall_r_2, option_labels):
+  e_left = 0
+  e_right = 0 
+  for i in range(len(option_labels)):
+      #print("i: ", i)
+      if (sum(overall_r_1) == 0):
+        left = 0 
+      else:
+        left = overall_r_1[i]/sum(overall_r_1)
+
+      if (sum(overall_r_2) == 0):
+        right = 0 
+      else:
+        right = overall_r_2[i]/sum(overall_r_2)
+      
+      e_left = e_left + log(left)
+      e_right = e_right + log(right)
+  return e_left, e_right
+
+def entropy_split(e_left, e_right, overall_r_1, overall_r_2):
+  return (sum(overall_r_1)/(sum(overall_r_1) + sum(overall_r_2)))*e_left + (sum(overall_r_2)/(sum(overall_r_1) + sum(overall_r_2)))*e_right
+
 
 def findBestSplit(A, a, D):
   entropy1, option_labels = first_entropy(D, A)
@@ -424,30 +457,54 @@ def findBestSplit(A, a, D):
     return entropy1
 
   pd.to_numeric(D.loc[:, a])
-  print(D[a])
+  #print()
+  #print("FIND BEST SPLIT")
+  #print()
+  #print(D[a])
   labels2 = D[a].value_counts().index.tolist()
   labels2.sort()
   option_labels2 = labels2
-  print("OL2: ", option_labels2)
+  #print("OL2: ", option_labels2)
 
   track_lab = [] #label tracker so we can send back the one that has the best entropy 
   track_entro = []
 
-  print("First Entropy", entropy1)
-  print("A: ", a)
+  #print("First Entropy", entropy1)
+  #print("A: ", a)
+  #print(D.sort_values(by=[a]))
   for i in range (len(option_labels2)): 
-    entropy = 0
+
+    #print()
+    #print("Label ", option_labels2[i])
+    overall_r_1 = []
+    overall_r_2 = []
     for j in range (len(option_labels)): 
       label = option_labels2[i]
-      total = int((D[a] == label).sum())
-      ratio_1 = len(D.loc[(D[a] == label) & (D[A] == option_labels[j]) ].index) / total
-      entropy = entropy + log(ratio_1)
-    print("Label: ", label, "Entropy: ", entropy)
-    track_lab.append(label)
-    track_entro.append(entropy)
-    #overall = overall + (total/len(D[a])) * entropy  #I dont think we need to do anymore 
-  best = max(track_entro)
-  o_label = track_lab[track_entro.index(best)]
+      total = int((D[A] == option_labels[j]).sum())
+      ratio_1 = len(D.loc[(D[a] <= label) & (D[A] == option_labels[j]) ].index)
+      ratio_2 = total - ratio_1
+      overall_r_1.append(ratio_1)
+      overall_r_2.append(ratio_2)
+      #print("ratio_1: ", ratio_1, "ratio_2: ", ratio_2)
+      # label = option_labels2[i]
+      # total = int((D[a] == label).sum())
+      # ratio_1 = len(D.loc[(D[a] == label) & (D[A] == option_labels[j]) ].index) / total
+    
+    #print("left: ", overall_r_1)
+    #print("right: ", overall_r_2)
+    #compute e 
+    e_left, e_right = compute_e(overall_r_1, overall_r_2, option_labels)
+    #print("e_left: ", e_left, "e_right: ", e_right)
+
+    e_overall = entropy_split(e_left, e_right, overall_r_1, overall_r_2)
+    #print("e_overall: ", e_overall)
+
+    track_entro.append(e_overall)
+    
+  best = min(track_entro)
+  o_label = option_labels2[track_entro.index(best)]
+  #print(best)
+  #print(o_label)
   mx_v = best
   return o_label, mx_v 
 
@@ -512,11 +569,11 @@ def log(A):
   return -((A) * x)
 
 def check_home(D, A):
-  print("Check_hom ", check_home) 
+  #print("Check_hom ", check_home) 
   d = D[[D.columns[-1]]]
-  print("d ", d)
+  #print("d ", d)
   results = d.value_counts().index.to_list()
-  print("results ", results)
+  #print("results ", results)
   if len(results) > 1: 
     return False, False 
   else: 

@@ -32,9 +32,9 @@ def main():
   # threshold = float(input("Threshold: "))
   # n = int(input("n folds: "))
 
-  threshold = 0.2 
+  threshold = 0.2
   n = 1
-  training_file = "iris.data.csv"
+  training_file = "Extra_Example.csv"
   
     # argumentList = sys.argv[1:]
     # training_file = argumentList[0]
