@@ -47,7 +47,7 @@ def is_numeric(D):
 def find_result(list_, dict_): 
   print("Dict")
   print(dict_)
-  exit()
+  sys.exit()
   result = ""
   if "node" in  dict_.keys():
     node = dict_["node"]
