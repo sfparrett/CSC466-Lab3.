@@ -1,6 +1,7 @@
 
 import pandas as pd
 import numpy as np
+import random 
 
 df = pd.DataFrame(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 1]]),
                    columns=['a', 'b', 'c'])
@@ -17,3 +18,6 @@ for i in range(3):
     here[i] += i
 
 print(here[0])
+
+
+print(random.sample(["1", '2', '3', '9'], 2))

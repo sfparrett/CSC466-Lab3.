@@ -3,6 +3,7 @@ import pandas as pd
 import math 
 import json 
 import numpy as np
+import random
 
 def prepare_D(training_file, restrictions_list): 
     data = pd.read_csv(training_file)
@@ -121,7 +122,6 @@ def zero_matrix(result):
 
   return data
 
-
 def matrix(a,b, result):
   data = zero_matrix(result)
 
@@ -132,7 +132,9 @@ def matrix(a,b, result):
 
   return data
 
-def classifier(D, raw, k):
+  #classifier(D, final_dict, k_knn, forest)
+
+def classifier(D, raw, k, Forest):
   
   json_filename = "json_out"
   f = open(json_filename, "w")
@@ -158,7 +160,7 @@ def classifier(D, raw, k):
     #passed_row = [7.1,1.5,0.01,5.7,0.082,3,14,0.99808,3.4,0.52,11.2,3] #3
     result = find_result(attributes, passed_row, raw) #C45 implimentation 
     result1 = knn(D, k, index)
-    result2 = classify_random_forest()
+    result2 =  RFClassify(Forest, passed_row)
 
     # print("result ", result)
     # print("result1 ", result1)
@@ -195,7 +197,7 @@ def classifier(D, raw, k):
   
   return records, o_data, overall_r
 
-def cross_validation(is_numeric, D, A, n, threshold):
+def cross_validation(is_numeric, D, A, n, threshold, m, k_rt, N, k_knn):
 #   print("cross val func", D["class"].unique()) 
   D = D.sample(frac = 1).reset_index(drop=True)
   overall = len(D)
@@ -234,13 +236,15 @@ def cross_validation(is_numeric, D, A, n, threshold):
 
     node, final_dict = C45(is_numeric, send_C45, Attributes, threshold, before_node, dict_)
 
-    print()
-    print("Final: ")
-    print(final_dict)
+    forest = randomForest(D, A, N, m, k_rt, is_numeric)
+
+    # print()
+    # print("Final: ")
+    # print(final_dict)
 
     #data, total, results are now a list of list 
 
-    total, data, result = classifier(D, final_dict, i)
+    total, data, result = classifier(D, final_dict, k_knn, forest)
 
     # print("Overall Data")
     # print(data)
@@ -283,18 +287,10 @@ def cross_validation(is_numeric, D, A, n, threshold):
       print("Individual accuracies: ", accuracy[i])
       print("Average accuracy: ", sum(accuracy[i])/len(accuracy[i]))
 
-
 def json_file_to_dict(json_file): 
   with open(json_file) as f:
     data = json.load(f)
     return data 
-
-
-def random_forest():
-  return 0 
-
-def classify_random_forest():
-  return 0
 
 
 def knn(D, k, index):
@@ -313,24 +309,24 @@ def knn(D, k, index):
   #normalize
   normalized_df=(D-D.min())/(D.max()-D.min())
 
-  print("Index: ", index)
+  # print("Index: ", index)
   p_classify = normalized_df.iloc[index]
-  print(p_classify)
+  # print(p_classify)
   #make sure they are floats
   p_classify = [float(x) for x in p_classify]
   p_classify = np.array(p_classify)
-  print(p_classify)
+  # print(p_classify)
   for index, row in normalized_df.iterrows():
     new_row = np.array(row.tolist())
-    print("Point Classify: ",p_classify)
-    print("New Row: ", new_row)
+    # print("Point Classify: ",p_classify)
+    # print("New Row: ", new_row)
     dist[index] = dist[index] + np.linalg.norm(p_classify-new_row)
   
-  print("Distances: ", dist)
-  print("Actual: ", actual)
+  # print("Distances: ", dist)
+  # print("Actual: ", actual)
   data = {'Distances': dist, "Predictions": actual}
   df = pd.DataFrame(data)
-  print(df)
+  # print(df)
 
   df = df.sort_values(by=['Distances']).reset_index(drop=True)
 
@@ -344,10 +340,8 @@ def knn(D, k, index):
 # // x - point to classify
 # for d in D do                  // compute distances
 #     dist[d] = distance(d, x)
-
 # select k datapoints d1, ... ,dk from D with the smallest values
 #        of dist[d]
-
 # class = most_frequent_label({d1,...,dl})
 # return class
 
@@ -434,6 +428,43 @@ def C45(is_numeric, D, A, threshold, node, dict_):
   # print("tree {}".format(node_dict))
   return node, node_dict
 
+
+def most_frequent(list_):
+  return max(set(list_), key = list_.count)
+
+def RFClassify(Forest, x):
+
+  prediction = []
+  for f in Forest: 
+    prediction.append( find_result(f.A, x, f.d,))
+  
+  # print("prediction ", prediction)
+  return most_frequent(prediction)
+  
+def randomForest(D, A, N, m, k, is_numeric):
+  forest = []
+  m = int(round(m*len(A)))
+  k = int(round(k*len(D)))
+
+  for i in range(0,N): 
+    AttList = random.sample(A, m)
+    Data =  D.sample(n = k)
+    f = Forest(AttList, Data, 0, is_numeric)
+    forest.append(f)
+    i+=1
+    
+  return forest
+
+class Forest: 
+  def __init__(self, A, D,threshold, is_numeric): 
+    self.A = A
+    self.D = D
+    self.threshold = threshold
+    node = Normal()
+    d = {}
+    T, d = C45(is_numeric, D, A,threshold,node,d)
+    self.d = d
+
 class Leaf:
     def __init__(self,probability, result):
       self.probability = probability
@@ -463,19 +494,6 @@ class Edge:
     def __repr__(self):
       ret = "{} {}".format( self.label,  self.node.__repr__())
       return ret 
-
-# def find_most_frequent_label(D): 
-#   # print("most frequent label")
-#   # print("D\n", D)
-#   df = D.apply(pd.Series.value_counts)
-#   # print("df\n", df)
-#   max_column = df.max().sort_values(ascending=False).index[0]
-#   # print("max column\n", max_column)
-#   label = df[max_column].idxmax()
-#   percentage = df[max_column].max()/df[max_column].sum()
-#   # print("label", df[max_column].max())
-#   # print("label 2", df[max_column].sum())
-#   return label, percentage
 
 def find_most_frequent_label(D): 
   # print("most frequent label")
@@ -529,31 +547,6 @@ def selectSplittingAttribute(is_numeric, A,D,threshold):
   else:
     return None, None
   
-
-  
-  
-
-  # for i in range(len(A)):
-  #   if (D[A[i]].iloc[0] == str(D[A[i]].iloc[0])):  
-  #     if D[A[i]].iloc[0].isnumeric(): 
-  #       D[A[i]] = pd.to_numeric(D[A[i]])
-  #       x = findBestSplit(A[i], D)
-  #       sys.exit()
-  #       pA = entropy(D, A[i], D.columns[-1])
-  #     else:
-  #       pA = entropy(D, A[i], D.columns[-1])
-  #   elif D[A[i]].iloc[0].is_integer():
-  #     x = findBestSplit(A[i], D)
-  #     sys.exit()
-  #     pA = entropy(D, A[i], D.columns[-1])
-  #   gain.append(p0 - pA) 
-  # best = max(gain)
-  # if best > threshold:
-  #   x = A[gain.index(max(gain))]
-  #   return x
-  # else:
-  #   return None
-
 def compute_e(overall_r_1, overall_r_2, option_labels):
   e_left = 0
   e_right = 0 
@@ -575,7 +568,6 @@ def compute_e(overall_r_1, overall_r_2, option_labels):
 
 def entropy_split(e_left, e_right, overall_r_1, overall_r_2):
   return (sum(overall_r_1)/(sum(overall_r_1) + sum(overall_r_2)))*e_left + (sum(overall_r_2)/(sum(overall_r_1) + sum(overall_r_2)))*e_right
-
 
 def findBestSplit(A, a, D):
   entropy1, option_labels = first_entropy(D, A)
@@ -634,32 +626,6 @@ def findBestSplit(A, a, D):
   mx_v = best
   return o_label, mx_v 
 
-
-
-  # #  Questions: 
-  # # 1.) What does ascendin g order look like for D
-  # # 2.) what is alpha 
-  # print("A", a)
-  # counts = [[]]
-  # Gain = []
-  # alpha = []
-  # p0 = first_entropy(D, a) #we might need to change this 
-  # D = D.sort_values(by=[a], ascending = True) # ascending = True or False?
-  # D= D.reset_index(drop=True)
-  # for i in range(1, len(D)): 
-  #   d = D.iloc[i-1].to_list()
-  #   alpha.append(d[0])
-  #   print("Alpha: ", alpha)
-  #   exit()
-  #    # go into data point , check this   
-  #   for j in range(len(k)):
-  #     continue 
-  # for l in range(1, len(D)):
-  #   Gain[l] = p0 - entropy(D, a, counts) #some "magic" has been hidden inside the call of the entropy(D,Ai, (counts_1[l],...,counts_k[l]))  
-  #                                        #function (we are passing it the distribution of the class labels on the "left" side of the split, 
-  #                                        #the function needs to construct the distribution of labels on the "right" side of the split from the data passed into it)..
-  # pass 
-
 def first_entropy(D, A):
   labels = list(D[A])
   option_labels = list(set(labels))
@@ -704,4 +670,5 @@ def check_home(D, A):
     return False, False 
   else: 
     return True, results[0]
+
 

@@ -32,11 +32,8 @@ def main():
   # threshold = float(input("Threshold: "))
   # n = int(input("n folds: "))
 
-  threshold = 0.1
-  n = 0
-  #training_file = "iris.data.copy.csv"
-  # clean None v
-  training_file = "Extra_Example.csv"
+    # clean None v
+  #training_file = "Extra_Example.csv"
   
     # argumentList = sys.argv[1:]
     # training_file = argumentList[0]
@@ -53,6 +50,20 @@ def main():
     # threshold = float(input("Input threshold value: "))
     # # print(type(threshold))
 
+  training_file = "iris.data.csv"
+
+  #For C45
+  threshold = 0.1
+  n = 0 #amount of folds 
+
+  #For Random Trees
+  m = .8
+  k_rt = .9
+  N = 3
+
+  #KNN 
+  k_knn = 3
+  
   restrictions_list = []
 
   is_numeric, D, A = prepare_D(training_file, restrictions_list)
@@ -62,7 +73,12 @@ def main():
   for i in D.columns:
     D.drop(D.loc[D[i] == "?"].index, inplace=True)
 
-  cross_validation(is_numeric, D, A, n, threshold)
+  cross_validation(is_numeric, D, A, n, threshold, m, k_rt, N, k_knn)
+  # forest = randomForest(D=D, A=A, N=3, m=int(round(.80*len(A))), k=int(round(.9*len(D))), DecisionTreeImplementation="C45", is_numeric=is_numeric)
+  # print("forest", forest[0].d)
+  # c = RFClassify(forest, x= [6.7,3.0,5.0,1.7,"Iris-versicolor"])
+  # print("class", c)
+
 
 
 main()
