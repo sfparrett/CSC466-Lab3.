@@ -103,24 +103,21 @@ def find_result(attributes, list_, dict_):
 
 def zero_matrix(result):
   zeros = []
-  print(result)
   for i in range(len(result)):
     zeros.append([0]*len(result))
 
   actual = [] 
   classified = []
   for i in result:
-    print("i ", i)
-    print(type(i))
     actual.append("A "+ str(i))
     classified.append("C "+ str(i))
     # actual.append("Actual "+ str(i))
     # classified.append("Classified "+ str(i))
   
   data = pd.DataFrame(data = zeros, index = actual, columns = classified)
-  pd.set_option('display.max_columns', None)
-  print("Zero Matrix: ")
-  print(data)
+  # pd.set_option('display.max_columns', None)
+  # print("Zero Matrix: ")
+  # print(data)
 
   return data
 
@@ -135,7 +132,7 @@ def matrix(a,b, result):
 
   return data
 
-def classifier(D, raw):
+def classifier(D, raw, k):
   
   json_filename = "json_out"
   f = open(json_filename, "w")
@@ -145,11 +142,13 @@ def classifier(D, raw):
   objects = list(D[D.columns[-1]])
   object_type = list(set(objects))
   attributes = list(D.iloc[:1])
-  print("UNIQUE VALUES\n", D[attributes[-1]].unique()) # [6. 7. 5. 4. 8. 3.]
+  # print("UNIQUE VALUES\n", D[attributes[-1]].unique()) # [6. 7. 5. 4. 8. 3.]
 
-  overall = []
+  overall = [[] for _ in range(3)]
+  overall_r = []
+  o_data = []
   records = len(D)
-  print("RESULTS: ")
+  # print("RESULTS: ")
   for index, row in D.iterrows():
     passed_row = row.tolist()
     if len(attributes) != len(passed_row): 
@@ -157,47 +156,53 @@ def classifier(D, raw):
       sys.exit()
     #passed_row = [ 6.9,1.09,0.06,2.1,0.061,12,31,0.9948,3.51,0.43,11.4,4] #4
     #passed_row = [7.1,1.5,0.01,5.7,0.082,3,14,0.99808,3.4,0.52,11.2,3] #3
-    result = find_result(attributes, passed_row, raw)
-    print("result ", result)
+    result = find_result(attributes, passed_row, raw) #C45 implimentation 
+    result1 = knn(D, k, index)
+    result2 = classify_random_forest()
+
+    # print("result ", result)
+    # print("result1 ", result1)
+    # print("result2 ", result2)
     # sys.exit()
-    overall.append(result)
-    
+    overall[0].append(result)
+    overall[1].append(result1)
+    overall[2].append(result2)
+  
+  for i in range(3):
+    x = D[D.columns[-1]].to_list()
+    data = {'Predicted': overall[i], "Real": x}
+    df = pd.DataFrame(data)
+    print(df)
+
+    a = df['Predicted'].to_list()
+    b = df['Real'].to_list()
+
+    result = df['Real'].value_counts().index.to_list()
+    result2 = df['Predicted'].value_counts().index.to_list()
+
+    # print("Real vs. Predicted")
+    # print(result)
+    # print(result2)
+    # print()
+    for i in result2:
+      if (i not in result):
+        result.append(i)
+
+    data = matrix(a,b, result)
+    o_data.append(data)
+    overall_r.append(result)
 
   
-
-  x = D[D.columns[-1]].to_list()
-  data = {'Predicted': overall, "Real": x}
-  df = pd.DataFrame(data)
-  print(df)
-
-  a = df['Predicted'].to_list()
-  b = df['Real'].to_list()
-
-  result = df['Real'].value_counts().index.to_list()
-  result2 = df['Predicted'].value_counts().index.to_list()
-
-  print("Real vs. Predicted")
-  print(result)
-  print(result2)
-  print()
-  for i in result2:
-    if (i not in result):
-      result.append(i)
-
-  data = matrix(a,b, result)
-
-  
-  return records, data, result
+  return records, o_data, overall_r
 
 def cross_validation(is_numeric, D, A, n, threshold):
 #   print("cross val func", D["class"].unique()) 
-  matrix = []
   D = D.sample(frac = 1).reset_index(drop=True)
   overall = len(D)
   o_eval = len(D)
-  correct = 0 
-  total_amt = 0 
-  accuracy = []
+  correct = [0]*3 
+  total_amt = 0
+  accuracy = [[] for _ in range(3)]
 
   if(n == 0):
     n = 1
@@ -233,41 +238,118 @@ def cross_validation(is_numeric, D, A, n, threshold):
     print("Final: ")
     print(final_dict)
 
-    total, data, result = classifier(send_rec, final_dict)
-    lst = data.values.tolist()
+    #data, total, results are now a list of list 
 
-    matrix.append(data)
+    total, data, result = classifier(D, final_dict, i)
 
-    total = data.values.sum()
-    
-    T = 0
-    for j in range(len(lst)):
-      T = T + lst[j][j]
-
-    total_amt += total
-    correct += T
-    accuracy.append(T/total)
+    # print("Overall Data")
+    # print(data)
+    # print("Overall Result ", result)
     i +=1
 
-  print("Overall Matrix: ")
+    names = ["C45", "KNN", "Random Forest"]
+    matrix_fin = []
+    for i in range(len(data)):
+      o_matrix = []
 
-  overall_matrix = zero_matrix(result)
-  for i in matrix:
-    overall_matrix = overall_matrix.add(i, fill_value=0)
-  print(overall_matrix)
+      lst = data[i].values.tolist()
 
-  print()
-  print("Totals: ")
-  #print("Total Number of records classified: ", total_amt)
-  print("Overall Accuracy: ", correct/total_amt)
-  print("Individual accuracies: ", accuracy)
-  print("Average accuracy: ", sum(accuracy)/len(accuracy))
+      o_matrix.append(data[i])
+      total = data[i].values.sum()
+
+      T = 0
+      for j in range(len(lst)):
+        T = T + lst[j][j]
+
+      
+      correct[i] += T
+      accuracy[i].append(T/total)
+      matrix_fin.append(o_matrix)
+    total_amt += total
+
+    for i in range(3):
+      print()
+      print("Overall Matrix of: ", names[i])
+
+      overall_matrix = zero_matrix(result[i])
+      for j in matrix_fin[i]:
+        overall_matrix = overall_matrix.add(j, fill_value=0)
+      print(overall_matrix)
+
+      print()
+      print("Totals: ")
+      #print("Total Number of records classified: ", total_amt)
+      print("Overall Accuracy: ", correct[i]/total_amt)
+      print("Individual accuracies: ", accuracy[i])
+      print("Average accuracy: ", sum(accuracy[i])/len(accuracy[i]))
 
 
 def json_file_to_dict(json_file): 
   with open(json_file) as f:
     data = json.load(f)
     return data 
+
+
+def random_forest():
+  return 0 
+
+def classify_random_forest():
+  return 0
+
+
+def knn(D, k, index):
+  #using euclidean distance
+  dist = [0] * len(D)
+  actual = D[D.columns[-1]].to_list()
+  D = D.iloc[:,:-1] #remove prediction row 
+
+  #make sure all values are numeric 
+  D = D.apply(pd.to_numeric, errors='coerce')
+
+  # print(D["Length"])
+  # print(D.min())
+  # print(D.max())
+
+  #normalize
+  normalized_df=(D-D.min())/(D.max()-D.min())
+
+  print("Index: ", index)
+  p_classify = normalized_df.iloc[index]
+  print(p_classify)
+  #make sure they are floats
+  p_classify = [float(x) for x in p_classify]
+  p_classify = np.array(p_classify)
+  print(p_classify)
+  for index, row in normalized_df.iterrows():
+    new_row = np.array(row.tolist())
+    print("Point Classify: ",p_classify)
+    print("New Row: ", new_row)
+    dist[index] = dist[index] + np.linalg.norm(p_classify-new_row)
+  
+  print("Distances: ", dist)
+  print("Actual: ", actual)
+  data = {'Distances': dist, "Predictions": actual}
+  df = pd.DataFrame(data)
+  print(df)
+
+  df = df.sort_values(by=['Distances']).reset_index(drop=True)
+
+  df = df[1:k+1]
+
+  prediction = df["Predictions"].value_counts().index.max()
+
+  return prediction
+#  // D - dataset
+# // k - number of nearest neighbors
+# // x - point to classify
+# for d in D do                  // compute distances
+#     dist[d] = distance(d, x)
+
+# select k datapoints d1, ... ,dk from D with the smallest values
+#        of dist[d]
+
+# class = most_frequent_label({d1,...,dl})
+# return class
 
 
 def C45(is_numeric, D, A, threshold, node, dict_):

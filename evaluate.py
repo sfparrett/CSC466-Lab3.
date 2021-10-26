@@ -36,7 +36,7 @@ def main():
   n = 0
   #training_file = "iris.data.copy.csv"
   # clean None v
-  training_file = "winequality-red-fixed.csv"
+  training_file = "Extra_Example.csv"
   
     # argumentList = sys.argv[1:]
     # training_file = argumentList[0]
