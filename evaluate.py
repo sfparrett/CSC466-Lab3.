@@ -4,29 +4,103 @@ import math
 import json 
 import numpy as np
 from utils import *
+import itertools
+from timeit import default_timer as timer
 
 def main():
-  # python3 validation.py <TrainingSetFile.csv> [<restrictionsFile>]
+  print("Select a number indicating the training file:")
+  print("\t 1 = iris.data.csv\n\t 2 = letter-recognition.data\n\t 3 = winequality-red-fixed.csv\n\t 4 = winequality-white-fixed.csv\n\t 5 = crx.data.csv \n\t 6 = heart.csv\n")
+  training_file = int(input(""))
+  if training_file == 1: 
+    training_file = "iris.data.csv" 
+  elif training_file == 2: 
+    training_file = "letter-recognition.data.csv"
+  elif training_file == 3: 
+    training_file = "winequality-red-fixed.csv"
+  elif training_file == 4: 
+    training_file = "winequality-white-fixed.csv"
+  elif training_file == 5: 
+    training_file = "crx.data.csv"
+  else: 
+      training_file = "heart.csv" 
 
-  # print("Select a number indicating the training file:")
-  # print("\t 1 = openHouses.csv\n\t 2 = adult-stretch.csv\n\t 3 = adult+stretch.csv\n\t 4 = yellow-small.csv\n\t 5 = yellow-small+adult-stretch.csv \n\t 6 = agaricus-lepiota.csv \n\t 7 = nursery.csv \n")
-  # training_file = int(input(""))
-  # if training_file == 1: 
-  #   training_file = "openHouses.csv" 
-  # elif training_file == 2: 
-  #   training_file = "adult-stretch.csv"
-  # elif training_file == 3: 
-  #   training_file = "adult+stretch.csv"
-  # elif training_file == 4: 
-  #   training_file = "yellow-small.csv"
-  # elif training_file == 5: 
-  #   training_file = "yellow-small+adult-stretch.csv"
-  # elif training_file == 6: 
-  #   training_file = "agaricus-lepiota.csv"
-  # else: 
-  #     training_file = "nursery.csv" 
+  print("\n\n\nC45 {}: ".format(training_file))
+  thresholds = [0.3, 0.5,0.7,0.9]
+  restrictions_list = []
+  is_numeric, D, A = prepare_D(training_file, restrictions_list)
+  D.dropna()
+  for i in D.columns:
+    D.drop(D.loc[D[i] == "?"].index, inplace=True)
 
-  # print("training file {}".format(training_file))
+  folds = [0,1,3,5,10]     # [x for x in range(0, 20, 3)]
+
+  for x in itertools.product(thresholds, folds):
+    if x[0] == -1: 
+      fold= len(D)
+    else: 
+      fold = x[0]
+
+    
+    
+    print("\n\nThreshold = {}".format(fold))
+    print("Number of folds = {}".format(x[1]))
+    n = x[1]
+    threshold = x[0]
+
+
+      # CLEAN DATA SET 
+    #cross_validation(is_numeric, D, A, n, threshold, m, k_rt, N, k_knn)
+    start = timer()
+    cross_validation2(is_numeric, D, A, n, threshold)
+    end = timer()
+    print("Time= {}s".format(end-start))
+
+main()
+
+  # print("\nC45")
+  # threshold = float(input("t = threshold: "))
+  # n = int(input("N = number of folds: "))
+
+  # print("\nRandom Trees")
+  # m =  input("m = percent of attributes: ")
+  # k_rt =  input("k = percent data points: ")
+  # N =  input("N = number of decision trees: ")
+
+  # print("\nK Nearest Neighbors")
+  # k_knn = input("k = number of nearest neighbors: ")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  # #For C45
+  # threshold = 0.1
+  # n = 3 #amount of folds 
+
+  # #For Random Trees
+  # m = .8
+  # k_rt = .9
+  # N = 3
+
+  # #KNN 
+  # k_knn = 3
+
+# print("training file {}".format(training_file))
 
   # #restriction_file = input("Restrictions File: ")
   # threshold = float(input("Threshold: "))
@@ -51,41 +125,6 @@ def main():
     # # print(type(threshold))
 
   #t = input("Which type: 1 = C45, 2 = KNN, 3 = Forest:")
-
-  #training_file = "winequality-red-fixed.csv"
-  training_file = "iris.data.csv"
-
-  #For C45
-  threshold = 0.1
-  n = 3 #amount of folds 
-
-  #For Random Trees
-  m = .8
-  k_rt = .9
-  N = 3
-
-  #KNN 
-  k_knn = 3
-  
-  restrictions_list = []
-
-  is_numeric, D, A = prepare_D(training_file, restrictions_list)
-
-  # CLEAN DATA SET 
-  D.dropna()
-  for i in D.columns:
-    D.drop(D.loc[D[i] == "?"].index, inplace=True)
-
-  #cross_validation(is_numeric, D, A, n, threshold, m, k_rt, N, k_knn, t)
-  cross_validation2(is_numeric, D, A, n, threshold)
-  # forest = randomForest(D=D, A=A, N=3, m=int(round(.80*len(A))), k=int(round(.9*len(D))), DecisionTreeImplementation="C45", is_numeric=is_numeric)
-  # print("forest", forest[0].d)
-  # c = RFClassify(forest, x= [6.7,3.0,5.0,1.7,"Iris-versicolor"])
-  # print("class", c)
-
-
-
-main()
 
 # def prepare_D(training_file, restrictions_list): 
 #     data = pd.read_csv('./' + training_file)

@@ -29,9 +29,6 @@ def prepare_D(training_file, restrictions_list):
 
     D = D[[c for c in D if c not in ignore_list] + [value]]
     A = list(D)
-    # print("A\n", A)
-    # print("class in D before C45\n ", D["class"].unique())
-
     return n, D, A
 
 def is_numeric(D): 
@@ -46,35 +43,26 @@ def is_numeric(D):
   return numeric
 
 def find_result(attributes, list_, dict_): 
-  # print("\n")
-  # print("dict_", dict_)
-
   result = ""
   if "node" in  dict_.keys():
     node = dict_["node"]
-    # print("node ", node)
     result = find_result(attributes, list_,node)
   elif "leaf" in  dict_.keys():
-    # print("leaf ", dict_['leaf']['decision'])
     return dict_['leaf']['decision']
     
   elif "edges" in  dict_.keys():
-    # print("numerical edges")
     edges = dict_["edges"]
 
     first_edge = edges[0]['edge']
     if "direction" in first_edge:
       
       edge_value = first_edge["value"]
-      # print("edge value ", edge_value, type(edge_value))
       second_edge = edges[1]['edge']
       attribute = dict_["var"]
-      # print("attribute ", attribute, type(attribute))
+
 
       passed_in_value = float(list_[attributes.index(attribute)])
-      # print("passed in value ", passed_in_value, type(passed_in_value))
-      # print("first value\n", first_edge)
-      # print("second value\n", second_edge)
+
 
       if passed_in_value <= edge_value:
         if first_edge["direction"] == "le": 
@@ -82,14 +70,13 @@ def find_result(attributes, list_, dict_):
         else: 
           result =  find_result(attributes, list_,second_edge["node"])
           
-      else: # greater than 
+      else: 
         if first_edge["direction"] == "gt": 
           result =  find_result(attributes, list_, first_edge["node"])
         else: 
           result =  find_result(attributes, list_,second_edge["node"])
 
     else: 
-      # print("categorical edges")
       for edge in edges: 
         if edge['edge']['value'] in list_: 
           edge_of_interest = edge['edge']
@@ -99,7 +86,6 @@ def find_result(attributes, list_, dict_):
             result = find_result(attributes, list_,edge_of_interest["node"])
 
       
-  # print("RESULT {}".format(result))
   return result 
 
 def zero_matrix(result):
@@ -112,27 +98,16 @@ def zero_matrix(result):
   for i in result:
     actual.append("A "+ str(i))
     classified.append("C "+ str(i))
-    # actual.append("Actual "+ str(i))
-    # classified.append("Classified "+ str(i))
-  
+
   data = pd.DataFrame(data = zeros, index = actual, columns = classified)
-  # pd.set_option('display.max_columns', None)
-  # print("Zero Matrix: ")
-  # print(data)
 
   return data
 
 def matrix(a,b, result):
   data = zero_matrix(result)
-
   for i, j in zip(a, b):
     data["C "+ str(i)]["A "+ str(j)] = data["C "+ str(i) ]["A "+ str(j)] + 1
-    #data["Classified "+ str(i)]["Actual "+ str(j)] = data["Classified "+ str(i) ]["Actual "+ str(j)] + 1
-
-
   return data
-
-  #classifier(D, final_dict, k_knn, forest)
 
 def classifier(D, raw, k, Forest):
   
@@ -144,28 +119,23 @@ def classifier(D, raw, k, Forest):
   objects = list(D[D.columns[-1]])
   object_type = list(set(objects))
   attributes = list(D.iloc[:1])
-  # print("UNIQUE VALUES\n", D[attributes[-1]].unique()) # [6. 7. 5. 4. 8. 3.]
+
 
   overall = [[] for _ in range(3)]
   overall_r = []
   o_data = []
   records = len(D)
-  # print("RESULTS: ")
+
   for index, row in D.iterrows():
     passed_row = row.tolist()
     if len(attributes) != len(passed_row): 
       print("ERROR")
       sys.exit()
-    #passed_row = [ 6.9,1.09,0.06,2.1,0.061,12,31,0.9948,3.51,0.43,11.4,4] #4
-    #passed_row = [7.1,1.5,0.01,5.7,0.082,3,14,0.99808,3.4,0.52,11.2,3] #3
-    result = find_result(attributes, passed_row, raw) #C45 implimentation 
+
+    result = find_result(attributes, passed_row, raw) 
     result1 = knn(D, k, index)
     result2 =  RFClassify(Forest, passed_row)
 
-    # print("result ", result)
-    # print("result1 ", result1)
-    # print("result2 ", result2)
-    # sys.exit()
     overall[0].append(result)
     overall[1].append(result1)
     overall[2].append(result2)
@@ -182,10 +152,6 @@ def classifier(D, raw, k, Forest):
     result = df['Real'].value_counts().index.to_list()
     result2 = df['Predicted'].value_counts().index.to_list()
 
-    # print("Real vs. Predicted")
-    # print(result)
-    # print(result2)
-    # print()
     for i in result2:
       if (i not in result):
         result.append(i)
@@ -197,10 +163,7 @@ def classifier(D, raw, k, Forest):
   
   return records, o_data, overall_r
 
-
 def classifier2(D, raw):
-  
-
   objects = list(D[D.columns[-1]])
   attributes = list(D.iloc[:1])
 
@@ -233,9 +196,7 @@ def classifier2(D, raw):
 
   return records, data, result 
 
-
 def cross_validation2(is_numeric, D, A, n, threshold):
-#   print("cross val func", D["class"].unique()) 
   D = D.sample(frac = 1).reset_index(drop=True)
   overall = len(D)
   o_eval = len(D)
@@ -249,6 +210,8 @@ def cross_validation2(is_numeric, D, A, n, threshold):
     n = len(D)
 
   i = 1 
+  result = []
+  matrix_fin = []
   # n = amount of folds 
   while i <= n:
     num = round(overall/n)
@@ -262,8 +225,6 @@ def cross_validation2(is_numeric, D, A, n, threshold):
     send_rec = D.loc[total_amt:end].reset_index(drop=True)
     # send rec = amount in the data set, gets smaller every time 3/3 2/3 1/3
 
-    print(send_rec)
-
     if (n == 1):
       send_C45 = send_rec
     else:
@@ -274,21 +235,12 @@ def cross_validation2(is_numeric, D, A, n, threshold):
     Attributes = A.copy()
 
     node, final_dict = C45(is_numeric, send_C45, Attributes, threshold, before_node, dict_)  
+    # print(final_dict)
     i+=1
 
-
     total, data, result = classifier2(D, final_dict)
-
-    # print("Overall Data")
-    # print(data)
-    # print("Overall Result ", result)
-
-    names = ["C45", "KNN", "Random Forest"]
     matrix_fin = []
-    
-
     lst = data.values.tolist()
-
     total = data.values.sum()
 
     T = 0
@@ -301,24 +253,20 @@ def cross_validation2(is_numeric, D, A, n, threshold):
     total_amt += total
 
 
-  print()
-  print("Overall Matrix of: ", names[0])
+  # print("Overall Matrix of: C45")
 
   overall_matrix = zero_matrix(result)
   for j in matrix_fin:
     overall_matrix = overall_matrix.add(j, fill_value=0)
   print(overall_matrix)
 
-  print()
   print("Totals: ")
   #print("Total Number of records classified: ", total_amt)
   print("Overall Accuracy: ", correct/total_amt)
   print("Individual accuracies: ", accuracy)
   print("Average accuracy: ", sum(accuracy)/len(accuracy))
 
-
-def cross_validation(is_numeric, D, A, n, threshold, m, k_rt, N, k_knn, t):
-#   print("cross val func", D["class"].unique()) 
+def cross_validation(is_numeric, D, A, n, threshold, m, k_rt, N, k_knn):
   D = D.sample(frac = 1).reset_index(drop=True)
   overall = len(D)
   o_eval = len(D)
@@ -344,9 +292,6 @@ def cross_validation(is_numeric, D, A, n, threshold, m, k_rt, N, k_knn, t):
 
     send_rec = D.loc[total_amt:end].reset_index(drop=True)
     # send rec = amount in the data set, gets smaller every time 3/3 2/3 1/3
-
-    print(send_rec)
-
     if (n == 1):
       send_C45 = send_rec
     else:
@@ -363,10 +308,6 @@ def cross_validation(is_numeric, D, A, n, threshold, m, k_rt, N, k_knn, t):
   forest = randomForest(D, A, N, m, k_rt, is_numeric)
 
   total, data, result = classifier(D, final_dict, k_knn, forest)
-
-  # print("Overall Data")
-  # print(data)
-  # print("Overall Result ", result)
 
   names = ["C45", "KNN", "Random Forest"]
   matrix_fin = []
@@ -409,41 +350,28 @@ def json_file_to_dict(json_file):
     data = json.load(f)
     return data 
 
-
 def knn(D, k, index):
-  #using euclidean distance
   dist = [0] * len(D)
   actual = D[D.columns[-1]].to_list()
-  D = D.iloc[:,:-1] #remove prediction row 
-
-  #make sure all values are numeric 
+  D = D.iloc[:,:-1] 
   D = D.apply(pd.to_numeric, errors='coerce')
 
-  # print(D["Length"])
-  # print(D.min())
-  # print(D.max())
-
-  #normalize
   normalized_df=(D-D.min())/(D.max()-D.min())
 
-  # print("Index: ", index)
   p_classify = normalized_df.iloc[index]
-  # print(p_classify)
-  #make sure they are floats
+
   p_classify = [float(x) for x in p_classify]
   p_classify = np.array(p_classify)
-  # print(p_classify)
+
   for index, row in normalized_df.iterrows():
     new_row = np.array(row.tolist())
-    # print("Point Classify: ",p_classify)
-    # print("New Row: ", new_row)
+
     dist[index] = dist[index] + np.linalg.norm(p_classify-new_row)
   
-  # print("Distances: ", dist)
-  # print("Actual: ", actual)
+
   data = {'Distances': dist, "Predictions": actual}
   df = pd.DataFrame(data)
-  # print(df)
+
 
   df = df.sort_values(by=['Distances']).reset_index(drop=True)
 
@@ -452,19 +380,9 @@ def knn(D, k, index):
   prediction = df["Predictions"].value_counts().index.max()
 
   return prediction
-#  // D - dataset
-# // k - number of nearest neighbors
-# // x - point to classify
-# for d in D do                  // compute distances
-#     dist[d] = distance(d, x)
-# select k datapoints d1, ... ,dk from D with the smallest values
-#        of dist[d]
-# class = most_frequent_label({d1,...,dl})
-# return class
-
 
 def C45(is_numeric, D, A, threshold, node, dict_):
-#   print("threshold 2", threshold)
+  # print("C45")
   best = []
   bol, attr = check_home(D, A)
 
@@ -475,20 +393,24 @@ def C45(is_numeric, D, A, threshold, node, dict_):
     else: 
       a = attr 
     leaf_dict = {"leaf": {"decision": a, "p":1}}
+    # print("leaf_dict 1")
     return leaf , leaf_dict   
 
   elif not A:
     c, p = find_most_frequent_label(D)
     leaf = Leaf(1,c)
     leaf_dict = {"leaf": {"decision": c, "p": p}}
+    # print("leaf_dict 2")
     return leaf , leaf_dict 
     
   else:
     Ag, x = selectSplittingAttribute(is_numeric, A,D,threshold)
+    # print("Ag", Ag)
     if Ag == None:
       c, p = find_most_frequent_label(D)
       leaf = Leaf(1,c)
       leaf_dict = {"leaf": {"decision": c, "p": p}}
+      # print("leaf_dict 3")
       return leaf, leaf_dict 
 
     else:
@@ -505,21 +427,19 @@ def C45(is_numeric, D, A, threshold, node, dict_):
             data = D[D[x] > Ag]
         
           if (data.empty):
-            #continue
-            # NEW GHOST PATHS CODE 
-            c, p = find_most_frequent_label(D)
-            leaf = Leaf(1,c)
-            leaf_dict = {"leaf": {"decision": c, "p": p}}
-            return leaf, leaf_dict  
+            # NEW GHOST PATHS CODE
+            continue 
+            # c, p = find_most_frequent_label(D)
+            # leaf = Leaf(1,c)
+            # leaf_dict = {"leaf": {"decision": c, "p": p}}
+            # return leaf, leaf_dict  
             #########################
 
           child, child_dict = C45(is_numeric, data, A, threshold, node, dict_) 
           edge = Edge(option_labels[i], child)
-
           edge_dict = {"edge": {"value": float(Ag), "direction": option_labels[i], "node": child_dict}}
           node.edges.append(edge)
           node_dict["node"]['edges'].append(edge_dict)
-
 
       else:
         node = Normal(Ag)
@@ -535,27 +455,25 @@ def C45(is_numeric, D, A, threshold, node, dict_):
             continue
           else:
             child, child_dict = C45(is_numeric, data, A, threshold, node, dict_) 
+            
             edge = Edge(option_labels[i], child)
 
             edge_dict = {"edge": {"value": option_labels[i], "node": child_dict}}
             node.edges.append(edge)
             node_dict["node"]['edges'].append(edge_dict)
-          #   print("threshold 3", threshold)
+            
 
-  # print("tree {}".format(node_dict))
+  # print("node_dict", node_dict)
   return node, node_dict
-
 
 def most_frequent(list_):
   return max(set(list_), key = list_.count)
 
 def RFClassify(Forest, x):
-
   prediction = []
   for f in Forest: 
     prediction.append( find_result(f.A, x, f.d,))
   
-  # print("prediction ", prediction)
   return most_frequent(prediction)
   
 def randomForest(D, A, N, m, k, is_numeric):
@@ -606,41 +524,27 @@ class Normal:
 class Edge:
     def __init__(self, label, node):
       self.label = label 
-      self.node = node  # Normal or Edge 
-  
+      self.node = node  
     def __repr__(self):
       ret = "{} {}".format( self.label,  self.node.__repr__())
       return ret 
 
 def find_most_frequent_label(D): 
-  # print("most frequent label")
-  # print("D\n", D)
   df = D.apply(pd.Series.value_counts)
-  # print("df\n", df)
   max_column = df.columns[-1]
-  # print("max column\n", max_column)
   label = df[max_column].idxmax()
   percentage = df[max_column].max()/df[max_column].sum()
-  # print("label", df[max_column].max())
-  # print("label 2", df[max_column].sum())
   return label, percentage
 
 def selectSplittingAttribute(is_numeric, A,D,threshold):
   gain = []
   check = []
   p0, option_labels = first_entropy(D, D.columns[-1])
-  #print("p0: ", p0)
   pA = 0
-  #print("Is_numeric: ", is_numeric)
-  #print("A: ", A)
   for i in range(len(A)):
     if is_numeric[A[i]] == True:
-      #print()
       x, pA = findBestSplit(D.columns[-1], A[i], D) #returns best splitting attribute and calculated pA
-      #entropy x <= 3 < x 
-      #print("X: ", x)
-      #print("pA: ", pA)
-      #print()
+
     else:
       pA = entropy(D, A[i], D.columns[-1])
       x = 'category'
@@ -648,15 +552,12 @@ def selectSplittingAttribute(is_numeric, A,D,threshold):
     check.append(x)
     gain.append(p0 - pA) 
   
-  #print("Check: ", check)
-  #print("Gain: ", gain)
-  
   best = max(gain)
-  if best > threshold:
+  # print("best", best)
+  # print("threshold", threshold)
+  if best < threshold:
     mx = A[gain.index(best)]
-    #print("mx", mx)
     x = check[gain.index(best)]
-    #print("x", x)
     if x != 'category':
       return x, mx
     else:
@@ -668,7 +569,6 @@ def compute_e(overall_r_1, overall_r_2, option_labels):
   e_left = 0
   e_right = 0 
   for i in range(len(option_labels)):
-      #print("i: ", i)
       if (sum(overall_r_1) == 0):
         left = 0 
       else:
@@ -692,25 +592,15 @@ def findBestSplit(A, a, D):
     return entropy1
 
   pd.to_numeric(D.loc[:, a])
-  #print()
-  #print("FIND BEST SPLIT")
-  #print()
-  #print(D[a])
   labels2 = D[a].value_counts().index.tolist()
   labels2.sort()
   option_labels2 = labels2
-  #print("OL2: ", option_labels2)
 
   track_lab = [] #label tracker so we can send back the one that has the best entropy 
   track_entro = []
 
-  #print("First Entropy", entropy1)
-  #print("A: ", a)
-  #print(D.sort_values(by=[a]))
   for i in range (len(option_labels2)): 
 
-    #print()
-    #print("Label ", option_labels2[i])
     overall_r_1 = []
     overall_r_2 = []
     for j in range (len(option_labels)): 
@@ -720,26 +610,13 @@ def findBestSplit(A, a, D):
       ratio_2 = total - ratio_1
       overall_r_1.append(ratio_1)
       overall_r_2.append(ratio_2)
-      #print("ratio_1: ", ratio_1, "ratio_2: ", ratio_2)
-      # label = option_labels2[i]
-      # total = int((D[a] == label).sum())
-      # ratio_1 = len(D.loc[(D[a] == label) & (D[A] == option_labels[j]) ].index) / total
-    
-    #print("left: ", overall_r_1)
-    #print("right: ", overall_r_2)
-    #compute e 
+
     e_left, e_right = compute_e(overall_r_1, overall_r_2, option_labels)
-    #print("e_left: ", e_left, "e_right: ", e_right)
-
     e_overall = entropy_split(e_left, e_right, overall_r_1, overall_r_2)
-    #print("e_overall: ", e_overall)
-
     track_entro.append(e_overall)
     
   best = min(track_entro)
   o_label = option_labels2[track_entro.index(best)]
-  #print(best)
-  #print(o_label)
   mx_v = best
   return o_label, mx_v 
 
@@ -778,11 +655,8 @@ def log(A):
   return -((A) * x)
 
 def check_home(D, A):
-  #print("Check_hom ", check_home) 
   d = D[[D.columns[-1]]]
-  #print("d ", d)
   results = d.value_counts().index.to_list()
-  #print("results ", results)
   if len(results) > 1: 
     return False, False 
   else: 
