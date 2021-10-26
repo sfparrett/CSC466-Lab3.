@@ -46,8 +46,8 @@ def is_numeric(D):
   return numeric
 
 def find_result(attributes, list_, dict_): 
-  print("\n")
-  print("dict_", dict_)
+  # print("\n")
+  # print("dict_", dict_)
 
   result = ""
   if "node" in  dict_.keys():
@@ -55,26 +55,26 @@ def find_result(attributes, list_, dict_):
     # print("node ", node)
     result = find_result(attributes, list_,node)
   elif "leaf" in  dict_.keys():
-    print("leaf ", dict_['leaf']['decision'])
+    # print("leaf ", dict_['leaf']['decision'])
     return dict_['leaf']['decision']
     
   elif "edges" in  dict_.keys():
-    print("numerical edges")
+    # print("numerical edges")
     edges = dict_["edges"]
 
     first_edge = edges[0]['edge']
     if "direction" in first_edge:
       
       edge_value = first_edge["value"]
-      print("edge value ", edge_value, type(edge_value))
+      # print("edge value ", edge_value, type(edge_value))
       second_edge = edges[1]['edge']
       attribute = dict_["var"]
-      print("attribute ", attribute, type(attribute))
+      # print("attribute ", attribute, type(attribute))
 
       passed_in_value = float(list_[attributes.index(attribute)])
-      print("passed in value ", passed_in_value, type(passed_in_value))
-      print("first value\n", first_edge)
-      print("second value\n", second_edge)
+      # print("passed in value ", passed_in_value, type(passed_in_value))
+      # print("first value\n", first_edge)
+      # print("second value\n", second_edge)
 
       if passed_in_value <= edge_value:
         if first_edge["direction"] == "le": 
@@ -197,7 +197,127 @@ def classifier(D, raw, k, Forest):
   
   return records, o_data, overall_r
 
-def cross_validation(is_numeric, D, A, n, threshold, m, k_rt, N, k_knn):
+
+def classifier2(D, raw):
+  
+
+  objects = list(D[D.columns[-1]])
+  attributes = list(D.iloc[:1])
+
+  overall = []
+  overall_r = []
+  o_data = []
+  records = len(D)
+
+  for index, row in D.iterrows():
+    passed_row = row.tolist()
+    if len(attributes) != len(passed_row): 
+      print("ERROR")
+      sys.exit()
+    result = find_result(attributes, passed_row, raw) #C45 implimentation 
+    overall.append(result)
+
+
+  x = D[D.columns[-1]].to_list()
+  data = {'Predicted': overall, "Real": x}
+  df = pd.DataFrame(data)
+
+  a = df['Predicted'].to_list()
+  b = df['Real'].to_list()
+
+  result = df['Real'].value_counts().index.to_list()
+
+  data = matrix(a,b, result)
+  o_data.append(data)
+  overall_r.append(result)
+
+  return records, data, result 
+
+
+def cross_validation2(is_numeric, D, A, n, threshold):
+#   print("cross val func", D["class"].unique()) 
+  D = D.sample(frac = 1).reset_index(drop=True)
+  overall = len(D)
+  o_eval = len(D)
+  correct = 0
+  total_amt = 0
+  accuracy = []
+
+  if(n == 0):
+    n = 1
+  elif(n == -1):
+    n = len(D)
+
+  i = 1 
+  # n = amount of folds 
+  while i <= n:
+    num = round(overall/n)
+    if (num > o_eval or (i - n) == 0):
+      num = o_eval
+    o_eval = o_eval - num
+    end = total_amt + num - 1
+    if (total_amt+num) > overall:
+      end = overall
+
+    send_rec = D.loc[total_amt:end].reset_index(drop=True)
+    # send rec = amount in the data set, gets smaller every time 3/3 2/3 1/3
+
+    print(send_rec)
+
+    if (n == 1):
+      send_C45 = send_rec
+    else:
+      send_C45 = D.drop(range(total_amt,end)).reset_index(drop=True)
+
+    before_node = Normal()
+    dict_ = {}
+    Attributes = A.copy()
+
+    node, final_dict = C45(is_numeric, send_C45, Attributes, threshold, before_node, dict_)  
+    i+=1
+
+
+    total, data, result = classifier2(D, final_dict)
+
+    # print("Overall Data")
+    # print(data)
+    # print("Overall Result ", result)
+
+    names = ["C45", "KNN", "Random Forest"]
+    matrix_fin = []
+    
+
+    lst = data.values.tolist()
+
+    total = data.values.sum()
+
+    T = 0
+    for j in range(len(lst)):
+      T = T + lst[j][j]
+
+    correct += T
+    accuracy.append(T/total)
+    matrix_fin.append(data)
+    total_amt += total
+
+
+  print()
+  print("Overall Matrix of: ", names[0])
+
+  overall_matrix = zero_matrix(result)
+  for j in matrix_fin:
+    overall_matrix = overall_matrix.add(j, fill_value=0)
+  print(overall_matrix)
+
+  print()
+  print("Totals: ")
+  #print("Total Number of records classified: ", total_amt)
+  print("Overall Accuracy: ", correct/total_amt)
+  print("Individual accuracies: ", accuracy)
+  print("Average accuracy: ", sum(accuracy)/len(accuracy))
+
+
+def cross_validation(is_numeric, D, A, n, threshold, m, k_rt, N, k_knn, t):
 #   print("cross val func", D["class"].unique()) 
   D = D.sample(frac = 1).reset_index(drop=True)
   overall = len(D)
@@ -212,6 +332,7 @@ def cross_validation(is_numeric, D, A, n, threshold, m, k_rt, N, k_knn):
     n = len(D)
 
   i = 1 
+  # n = amount of folds 
   while i <= n:
     num = round(overall/n)
     if (num > o_eval or (i - n) == 0):
@@ -222,6 +343,7 @@ def cross_validation(is_numeric, D, A, n, threshold, m, k_rt, N, k_knn):
       end = overall
 
     send_rec = D.loc[total_amt:end].reset_index(drop=True)
+    # send rec = amount in the data set, gets smaller every time 3/3 2/3 1/3
 
     print(send_rec)
 
@@ -234,58 +356,53 @@ def cross_validation(is_numeric, D, A, n, threshold, m, k_rt, N, k_knn):
     dict_ = {}
     Attributes = A.copy()
 
-    node, final_dict = C45(is_numeric, send_C45, Attributes, threshold, before_node, dict_)
+    node, final_dict = C45(is_numeric, send_C45, Attributes, threshold, before_node, dict_)  
 
-    forest = randomForest(D, A, N, m, k_rt, is_numeric)
-
-    # print()
-    # print("Final: ")
-    # print(final_dict)
-
-    #data, total, results are now a list of list 
-
-    total, data, result = classifier(D, final_dict, k_knn, forest)
-
-    # print("Overall Data")
-    # print(data)
-    # print("Overall Result ", result)
     i +=1
 
-    names = ["C45", "KNN", "Random Forest"]
-    matrix_fin = []
-    for i in range(len(data)):
-      o_matrix = []
+  forest = randomForest(D, A, N, m, k_rt, is_numeric)
 
-      lst = data[i].values.tolist()
+  total, data, result = classifier(D, final_dict, k_knn, forest)
 
-      o_matrix.append(data[i])
-      total = data[i].values.sum()
+  # print("Overall Data")
+  # print(data)
+  # print("Overall Result ", result)
 
-      T = 0
-      for j in range(len(lst)):
-        T = T + lst[j][j]
+  names = ["C45", "KNN", "Random Forest"]
+  matrix_fin = []
+  for i in range(len(data)):
+    o_matrix = []
 
-      
-      correct[i] += T
-      accuracy[i].append(T/total)
-      matrix_fin.append(o_matrix)
-    total_amt += total
+    lst = data[i].values.tolist()
 
-    for i in range(3):
-      print()
-      print("Overall Matrix of: ", names[i])
+    o_matrix.append(data[i])
+    total = data[i].values.sum()
 
-      overall_matrix = zero_matrix(result[i])
-      for j in matrix_fin[i]:
-        overall_matrix = overall_matrix.add(j, fill_value=0)
-      print(overall_matrix)
+    T = 0
+    for j in range(len(lst)):
+      T = T + lst[j][j]
 
-      print()
-      print("Totals: ")
-      #print("Total Number of records classified: ", total_amt)
-      print("Overall Accuracy: ", correct[i]/total_amt)
-      print("Individual accuracies: ", accuracy[i])
-      print("Average accuracy: ", sum(accuracy[i])/len(accuracy[i]))
+    
+    correct[i] += T
+    accuracy[i].append(T/total)
+    matrix_fin.append(o_matrix)
+  total_amt += total
+
+  for i in range(3):
+    print()
+    print("Overall Matrix of: ", names[i])
+
+    overall_matrix = zero_matrix(result[i])
+    for j in matrix_fin[i]:
+      overall_matrix = overall_matrix.add(j, fill_value=0)
+    print(overall_matrix)
+
+    print()
+    print("Totals: ")
+    #print("Total Number of records classified: ", total_amt)
+    print("Overall Accuracy: ", correct[i]/total_amt)
+    print("Individual accuracies: ", accuracy[i])
+    print("Average accuracy: ", sum(accuracy[i])/len(accuracy[i]))
 
 def json_file_to_dict(json_file): 
   with open(json_file) as f:
@@ -670,5 +787,13 @@ def check_home(D, A):
     return False, False 
   else: 
     return True, results[0]
+
+
+
+
+
+
+
+
 
 

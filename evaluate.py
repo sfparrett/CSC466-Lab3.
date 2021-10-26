@@ -6,7 +6,7 @@ import numpy as np
 from utils import *
 
 def main():
-    # python3 validation.py <TrainingSetFile.csv> [<restrictionsFile>]
+  # python3 validation.py <TrainingSetFile.csv> [<restrictionsFile>]
 
   # print("Select a number indicating the training file:")
   # print("\t 1 = openHouses.csv\n\t 2 = adult-stretch.csv\n\t 3 = adult+stretch.csv\n\t 4 = yellow-small.csv\n\t 5 = yellow-small+adult-stretch.csv \n\t 6 = agaricus-lepiota.csv \n\t 7 = nursery.csv \n")
@@ -50,11 +50,14 @@ def main():
     # threshold = float(input("Input threshold value: "))
     # # print(type(threshold))
 
+  #t = input("Which type: 1 = C45, 2 = KNN, 3 = Forest:")
+
+  #training_file = "winequality-red-fixed.csv"
   training_file = "iris.data.csv"
 
   #For C45
   threshold = 0.1
-  n = 0 #amount of folds 
+  n = 3 #amount of folds 
 
   #For Random Trees
   m = .8
@@ -73,7 +76,8 @@ def main():
   for i in D.columns:
     D.drop(D.loc[D[i] == "?"].index, inplace=True)
 
-  cross_validation(is_numeric, D, A, n, threshold, m, k_rt, N, k_knn)
+  #cross_validation(is_numeric, D, A, n, threshold, m, k_rt, N, k_knn, t)
+  cross_validation2(is_numeric, D, A, n, threshold)
   # forest = randomForest(D=D, A=A, N=3, m=int(round(.80*len(A))), k=int(round(.9*len(D))), DecisionTreeImplementation="C45", is_numeric=is_numeric)
   # print("forest", forest[0].d)
   # c = RFClassify(forest, x= [6.7,3.0,5.0,1.7,"Iris-versicolor"])
