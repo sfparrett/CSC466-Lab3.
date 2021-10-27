@@ -543,8 +543,10 @@ def selectSplittingAttribute(is_numeric, A,D,threshold):
   pA = 0
   for i in range(len(A)):
     if is_numeric[A[i]] == True:
-      x, pA = findBestSplit(D.columns[-1], A[i], D) #returns best splitting attribute and calculated pA
 
+      x, pA = findBestSplit(D.columns[-1], A[i], D) #returns best splitting attribute and calculated pA
+      print("bestsplit ", x, pA)
+      sys.exit()
     else:
       pA = entropy(D, A[i], D.columns[-1])
       x = 'category'
@@ -555,7 +557,7 @@ def selectSplittingAttribute(is_numeric, A,D,threshold):
   best = max(gain)
   # print("best", best)
   # print("threshold", threshold)
-  if best < threshold:
+  if best > threshold:
     mx = A[gain.index(best)]
     x = check[gain.index(best)]
     if x != 'category':
@@ -586,39 +588,74 @@ def compute_e(overall_r_1, overall_r_2, option_labels):
 def entropy_split(e_left, e_right, overall_r_1, overall_r_2):
   return (sum(overall_r_1)/(sum(overall_r_1) + sum(overall_r_2)))*e_left + (sum(overall_r_2)/(sum(overall_r_1) + sum(overall_r_2)))*e_right
 
-def findBestSplit(A, a, D):
-  entropy1, option_labels = first_entropy(D, A)
-  if (a == A):
-    return entropy1
+def findBestSplit(A, a, data):
+  print("\nFind Best Split")
+  print("A", A)
+  print("a",a)
+  print("D", data)
 
-  pd.to_numeric(D.loc[:, a])
-  labels2 = D[a].value_counts().index.tolist()
-  labels2.sort()
-  option_labels2 = labels2
 
-  track_lab = [] #label tracker so we can send back the one that has the best entropy 
-  track_entro = []
+  ageValues = np.sort(data[a].unique())
 
-  for i in range (len(option_labels2)): 
 
-    overall_r_1 = []
-    overall_r_2 = []
-    for j in range (len(option_labels)): 
-      label = option_labels2[i]
-      total = int((D[A] == option_labels[j]).sum())
-      ratio_1 = len(D.loc[(D[a] <= label) & (D[A] == option_labels[j]) ].index)
-      ratio_2 = total - ratio_1
-      overall_r_1.append(ratio_1)
-      overall_r_2.append(ratio_2)
+  myAtt = a
+  splits = [data[data[myAtt]<= i] for i in ageValues]
+  print("splits\n", splits)
+  print(type(splits))
+  sizes = np.array([len(splits[i]) for i in range(len(ageValues))])
+  print("sizes\n", sizes)
+  counts = np.array([np.array(x[A].value_counts()) for x in splits ])
+  print("counts\n", counts)
+  n = len(data)
 
-    e_left, e_right = compute_e(overall_r_1, overall_r_2, option_labels)
-    e_overall = entropy_split(e_left, e_right, overall_r_1, overall_r_2)
-    track_entro.append(e_overall)
+  fullDistribution = np.array(data[A].value_counts())
+  print("full Distribution", fullDistribution)
+  print("n",n)
+
+  f = np.array([c/l for c,l in zip(counts, sizes)])
+  print("f", f)
+  rightSide = fullDistribution-counts
+  print("rightSide", rightSide)
+
+
+  g = np.array([c/l for c,l in zip(rightSide, n-sizes)])
+  print("g",g)
+
+  split_entropies = sizes/n * (-np.sum(f*np.log2(f), axis = 1))  +   sizes/(n-sizes) * -np.sum(g*np.log2(g), axis=1)
+  print("Split entropies", split_entropies)
+  return ageValues[np.argmin(split_entropies[:-1])], np.argmin(split_entropies[:-1])
+
+  # entropy1, option_labels = first_entropy(D, A)
+  # if (a == A):
+  #   return entropy1
+
+  # pd.to_numeric(D.loc[:, a])
+  # labels2 = D[a].value_counts().index.tolist()
+  # labels2.sort()
+  # option_labels2 = labels2
+
+  # track_lab = [] #label tracker so we can send back the one that has the best entropy 
+  # track_entro = []
+
+  # for i in range (len(option_labels2)): 
+  #   overall_r_1 = []
+  #   overall_r_2 = []
+  #   for j in range (len(option_labels)): 
+  #     label = option_labels2[i]
+  #     total = int((D[A] == option_labels[j]).sum())
+  #     ratio_1 = len(D.loc[(D[a] <= label) & (D[A] == option_labels[j])].index)
+  #     ratio_2 = total - ratio_1
+  #     overall_r_1.append(ratio_1)
+  #     overall_r_2.append(ratio_2)
+
+  #   e_left, e_right = compute_e(overall_r_1, overall_r_2, option_labels)
+  #   e_overall = entropy_split(e_left, e_right, overall_r_1, overall_r_2)
+  #   track_entro.append(e_overall)
     
-  best = min(track_entro)
-  o_label = option_labels2[track_entro.index(best)]
-  mx_v = best
-  return o_label, mx_v 
+  # best = min(track_entro)
+  # o_label = option_labels2[track_entro.index(best)]
+  # mx_v = best
+  # return o_label, mx_v 
 
 def first_entropy(D, A):
   labels = list(D[A])

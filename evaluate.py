@@ -8,24 +8,25 @@ import itertools
 from timeit import default_timer as timer
 
 def main():
-  print("Select a number indicating the training file:")
-  print("\t 1 = iris.data.csv\n\t 2 = letter-recognition.data\n\t 3 = winequality-red-fixed.csv\n\t 4 = winequality-white-fixed.csv\n\t 5 = crx.data.csv \n\t 6 = heart.csv\n")
-  training_file = int(input(""))
-  if training_file == 1: 
-    training_file = "iris.data.csv" 
-  elif training_file == 2: 
-    training_file = "letter-recognition.data.csv"
-  elif training_file == 3: 
-    training_file = "winequality-red-fixed.csv"
-  elif training_file == 4: 
-    training_file = "winequality-white-fixed.csv"
-  elif training_file == 5: 
-    training_file = "crx.data.csv"
-  else: 
-      training_file = "heart.csv" 
+  # print("Select a number indicating the training file:")
+  # print("\t 1 = iris.data.csv\n\t 2 = letter-recognition.data\n\t 3 = winequality-red-fixed.csv\n\t 4 = winequality-white-fixed.csv\n\t 5 = crx.data.csv \n\t 6 = heart.csv\n")
+  # training_file = int(input(""))
+  # if training_file == 1: 
+  #   training_file = "iris.data.csv" 
+  # elif training_file == 2: 
+  #   training_file = "letter-recognition.data.csv"
+  # elif training_file == 3: 
+  #   training_file = "winequality-red-fixed.csv"
+  # elif training_file == 4: 
+  #   training_file = "winequality-white-fixed.csv"
+  # elif training_file == 5: 
+  #   training_file = "crx.data.csv"
+  # else: 
+  #     training_file = "heart.csv" 
 
+  training_file = "Extra_Example.csv" 
   print("\n\n\nC45 {}: ".format(training_file))
-  thresholds = [0.3, 0.5,0.7,0.9]
+  thresholds = [0.05,0.07,0.1]
   restrictions_list = []
   is_numeric, D, A = prepare_D(training_file, restrictions_list)
   D.dropna()
