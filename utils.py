@@ -606,7 +606,7 @@ def findBestSplit(A, a, data):
   print("sizes\n", sizes, len(sizes))
   counts = np.array([np.array(x[A].value_counts()) for x in splits ])
   print("counts\n", counts, len(counts))
-  n = len(data)
+
 
   fullDistribution = np.array(data[A].value_counts())
   print("full Distribution", fullDistribution)

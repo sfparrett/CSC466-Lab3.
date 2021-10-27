@@ -1,0 +1,80 @@
+
+Overall Matrix of: KNN - K = 2
+     C -  C +
+A -  288   69
+A +   82  214
+
+Totals: 
+Overall Accuracy:  0.7687595712098009
+Individual accuracies:  [0.7687595712098009]
+Average accuracy:  0.7687595712098009
+
+Overall Matrix of: KNN - K = 3
+     C -  C +
+A -  309   48
+A +   56  240
+
+Totals: 
+Overall Accuracy:  0.4203675344563553
+Individual accuracies:  [0.7687595712098009, 0.8407350689127105]
+Average accuracy:  0.8047473200612557
+
+Overall Matrix of: KNN - K = 4
+     C -  C +
+A -  304   53
+A +   59  237
+
+Totals: 
+Overall Accuracy:  0.27616130678917816
+Individual accuracies:  [0.7687595712098009, 0.8407350689127105, 0.8284839203675345]
+Average accuracy:  0.8126595201633485
+
+Overall Matrix of: KNN - K = 5
+     C -  C +
+A -  312   45
+A +   59  237
+
+Totals: 
+Overall Accuracy:  0.21018376722817764
+Individual accuracies:  [0.7687595712098009, 0.8407350689127105, 0.8284839203675345, 0.8407350689127105]
+Average accuracy:  0.8196784073506891
+
+Overall Matrix of: KNN - K = 6
+     C -  C +
+A -  308   49
+A +   56  240
+
+Totals: 
+Overall Accuracy:  0.1678407350689127
+Individual accuracies:  [0.7687595712098009, 0.8407350689127105, 0.8284839203675345, 0.8407350689127105, 0.8392036753445635]
+Average accuracy:  0.823583460949464
+
+Overall Matrix of: KNN - K = 7
+     C -  C +
+A -  315   42
+A +   50  246
+
+Totals: 
+Overall Accuracy:  0.14318529862174578
+Individual accuracies:  [0.7687595712098009, 0.8407350689127105, 0.8284839203675345, 0.8407350689127105, 0.8392036753445635, 0.8591117917304747]
+Average accuracy:  0.8295048494129658
+
+Overall Matrix of: KNN - K = 8
+     C -  C +
+A -  312   45
+A +   58  238
+
+Totals: 
+Overall Accuracy:  0.12032378035440823
+Individual accuracies:  [0.7687595712098009, 0.8407350689127105, 0.8284839203675345, 0.8407350689127105, 0.8392036753445635, 0.8591117917304747, 0.8422664624808576]
+Average accuracy:  0.8313279369940931
+
+Overall Matrix of: KNN - K = 9
+     C -  C +
+A -  314   43
+A +   55  241
+
+Totals: 
+Overall Accuracy:  0.10624042879019908
+Individual accuracies:  [0.7687595712098009, 0.8407350689127105, 0.8284839203675345, 0.8407350689127105, 0.8392036753445635, 0.8591117917304747, 0.8422664624808576, 0.8499234303215927]
+Average accuracy:  0.8336523736600306

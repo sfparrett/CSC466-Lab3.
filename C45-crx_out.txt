@@ -1,0 +1,240 @@
+C45 crx.data.csv: 
+
+Threshold = 0.3
+Number of folds = 0
+     C -  C +
+A -  134  223
+A +    8  288
+Totals: 
+Overall Accuracy:  0.6462480857580398
+Individual accuracies:  [0.6462480857580398]
+Average accuracy:  0.6462480857580398
+Time= 2.4760343549999995s
+
+
+Threshold = 0.3
+Number of folds = 1
+     C -  C +
+A -  134  223
+A +    8  288
+Totals: 
+Overall Accuracy:  0.6462480857580398
+Individual accuracies:  [0.6462480857580398]
+Average accuracy:  0.6462480857580398
+Time= 2.416976400000001s
+
+
+Threshold = 0.3
+Number of folds = 3
+     C -  C +
+A -  134  223
+A +    8  288
+Totals: 
+Overall Accuracy:  0.6462480857580398
+Individual accuracies:  [0.6462480857580398, 0.6462480857580398, 0.6462480857580398]
+Average accuracy:  0.6462480857580398
+Time= 6.763703525s
+
+
+Threshold = 0.3
+Number of folds = 5
+     C -  C +
+A -  134  223
+A +    8  288
+Totals: 
+Overall Accuracy:  0.6462480857580398
+Individual accuracies:  [0.6462480857580398, 0.6462480857580398, 0.6462480857580398, 0.6462480857580398, 0.6462480857580398]
+Average accuracy:  0.6462480857580398
+Time= 12.145933029999998s
+
+
+Threshold = 0.3
+Number of folds = 10
+     C -  C +
+A -  134  223
+A +    8  288
+Totals: 
+Overall Accuracy:  0.6462480857580398
+Individual accuracies:  [0.6462480857580398, 0.6462480857580398, 0.6462480857580398, 0.6462480857580398, 0.6462480857580398, 0.6462480857580398, 0.6462480857580398, 0.6462480857580398, 0.6462480857580398, 0.6462480857580398]
+Average accuracy:  0.6462480857580398
+Time= 25.322498162s
+
+
+Threshold = 0.5
+Number of folds = 0
+     C -  C +
+A -  357    0
+A +  296    0
+Totals: 
+Overall Accuracy:  0.5467075038284839
+Individual accuracies:  [0.5467075038284839]
+Average accuracy:  0.5467075038284839
+Time= 1.2338849029999963s
+
+
+Threshold = 0.5
+Number of folds = 1
+     C -  C +
+A -  357    0
+A +  296    0
+Totals: 
+Overall Accuracy:  0.5467075038284839
+Individual accuracies:  [0.5467075038284839]
+Average accuracy:  0.5467075038284839
+Time= 1.2475587990000037s
+
+
+Threshold = 0.5
+Number of folds = 3
+     C -  C +
+A -  357    0
+A +  296    0
+Totals: 
+Overall Accuracy:  0.5467075038284839
+Individual accuracies:  [0.5467075038284839, 0.5467075038284839, 0.5467075038284839]
+Average accuracy:  0.5467075038284839
+Time= 3.3554724430000036s
+
+
+Threshold = 0.5
+Number of folds = 5
+     C -  C +
+A -  357    0
+A +  296    0
+Totals: 
+Overall Accuracy:  0.5467075038284839
+Individual accuracies:  [0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839]
+Average accuracy:  0.5467075038284839
+Time= 5.887828060000004s
+
+
+Threshold = 0.5
+Number of folds = 10
+     C -  C +
+A -  357    0
+A +  296    0
+Totals: 
+Overall Accuracy:  0.5467075038284839
+Individual accuracies:  [0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839]
+Average accuracy:  0.546707503828484
+Time= 11.813506914000001s
+
+
+Threshold = 0.7
+Number of folds = 0
+     C -  C +
+A -  357    0
+A +  296    0
+Totals: 
+Overall Accuracy:  0.5467075038284839
+Individual accuracies:  [0.5467075038284839]
+Average accuracy:  0.5467075038284839
+Time= 1.166753287000006s
+
+
+Threshold = 0.7
+Number of folds = 1
+     C -  C +
+A -  357    0
+A +  296    0
+Totals: 
+Overall Accuracy:  0.5467075038284839
+Individual accuracies:  [0.5467075038284839]
+Average accuracy:  0.5467075038284839
+Time= 1.1364644380000044s
+
+
+Threshold = 0.7
+Number of folds = 3
+     C -  C +
+A -  357    0
+A +  296    0
+Totals: 
+Overall Accuracy:  0.5467075038284839
+Individual accuracies:  [0.5467075038284839, 0.5467075038284839, 0.5467075038284839]
+Average accuracy:  0.5467075038284839
+Time= 3.1889196759999976s
+
+
+Threshold = 0.7
+Number of folds = 5
+     C -  C +
+A -  357    0
+A +  296    0
+Totals: 
+Overall Accuracy:  0.5467075038284839
+Individual accuracies:  [0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839]
+Average accuracy:  0.5467075038284839
+Time= 5.704189632999999s
+
+
+Threshold = 0.7
+Number of folds = 10
+     C -  C +
+A -  357    0
+A +  296    0
+Totals: 
+Overall Accuracy:  0.5467075038284839
+Individual accuracies:  [0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839]
+Average accuracy:  0.546707503828484
+Time= 12.748867225000012s
+
+
+Threshold = 0.9
+Number of folds = 0
+     C -  C +
+A -  357    0
+A +  296    0
+Totals: 
+Overall Accuracy:  0.5467075038284839
+Individual accuracies:  [0.5467075038284839]
+Average accuracy:  0.5467075038284839
+Time= 1.5465202840000103s
+
+
+Threshold = 0.9
+Number of folds = 1
+     C -  C +
+A -  357    0
+A +  296    0
+Totals: 
+Overall Accuracy:  0.5467075038284839
+Individual accuracies:  [0.5467075038284839]
+Average accuracy:  0.5467075038284839
+Time= 1.5981093299999998s
+
+
+Threshold = 0.9
+Number of folds = 3
+     C -  C +
+A -  357    0
+A +  296    0
+Totals: 
+Overall Accuracy:  0.5467075038284839
+Individual accuracies:  [0.5467075038284839, 0.5467075038284839, 0.5467075038284839]
+Average accuracy:  0.5467075038284839
+Time= 4.06961575199999s
+
+
+Threshold = 0.9
+Number of folds = 5
+     C -  C +
+A -  357    0
+A +  296    0
+Totals: 
+Overall Accuracy:  0.5467075038284839
+Individual accuracies:  [0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839]
+Average accuracy:  0.5467075038284839
+Time= 7.515376438000004s
+
+
+Threshold = 0.9
+Number of folds = 10
+     C -  C +
+A -  357    0
+A +  296    0
+Totals: 
+Overall Accuracy:  0.5467075038284839
+Individual accuracies:  [0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839, 0.5467075038284839]
+Average accuracy:  0.546707503828484
+Time= 13.507772668000001s
