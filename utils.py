@@ -603,9 +603,9 @@ def findBestSplit(A, a, data):
   print("splits\n", splits)
   print(type(splits))
   sizes = np.array([len(splits[i]) for i in range(len(ageValues))])
-  print("sizes\n", sizes)
+  print("sizes\n", sizes, len(sizes))
   counts = np.array([np.array(x[A].value_counts()) for x in splits ])
-  print("counts\n", counts)
+  print("counts\n", counts, len(counts))
   n = len(data)
 
   fullDistribution = np.array(data[A].value_counts())
@@ -614,16 +614,26 @@ def findBestSplit(A, a, data):
 
   f = np.array([c/l for c,l in zip(counts, sizes)])
   print("f", f)
-  rightSide = fullDistribution-counts
-  print("rightSide", rightSide)
+  return None, None
+  # rightSide = fullDistribution-counts
+  # print("rightSide", rightSide)
 
 
-  g = np.array([c/l for c,l in zip(rightSide, n-sizes)])
-  print("g",g)
+  # g = np.array([c/l for c,l in zip(rightSide, n-sizes)])
+  # print("g",g)
 
-  split_entropies = sizes/n * (-np.sum(f*np.log2(f), axis = 1))  +   sizes/(n-sizes) * -np.sum(g*np.log2(g), axis=1)
-  print("Split entropies", split_entropies)
-  return ageValues[np.argmin(split_entropies[:-1])], np.argmin(split_entropies[:-1])
+  # split_entropies = sizes/n * (-np.sum(f*np.log2(f), axis = 1))  +   sizes/(n-sizes) * -np.sum(g*np.log2(g), axis=1)
+  # print("Split entropies", split_entropies)
+  # return ageValues[np.argmin(split_entropies[:-1])], np.argmin(split_entropies[:-1])
+
+  # END 
+
+
+
+
+
+
+
 
   # entropy1, option_labels = first_entropy(D, A)
   # if (a == A):
