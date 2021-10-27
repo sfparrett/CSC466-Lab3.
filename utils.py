@@ -603,9 +603,9 @@ def findBestSplit(A, a, data):
   print("splits\n", splits)
   print(type(splits))
   sizes = np.array([len(splits[i]) for i in range(len(ageValues))])
-  print("sizes\n", sizes)
+  print(sizes)
   counts = np.array([np.array(x[A].value_counts()) for x in splits ])
-  print("counts\n", counts)
+  print(counts)
   n = len(data)
 
   fullDistribution = np.array(data[A].value_counts())
@@ -613,8 +613,13 @@ def findBestSplit(A, a, data):
   print("n",n)
 
   f = np.array([c/l for c,l in zip(counts, sizes)])
-  print("f", f)
-  rightSide = fullDistribution-counts
+  print("f\n", f)
+
+  x =  np.resize(fullDistribution, counts.shape)
+  print()
+  print(x)
+  print()
+  rightSide = np.subtract(x, counts)
   print("rightSide", rightSide)
 
 
