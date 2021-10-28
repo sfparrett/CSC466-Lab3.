@@ -1,4 +1,4 @@
-Random Forest agaricus-lepiota.csv: 
+Random Forest iris.data.csv: 
 
 Percentage of Attributes = 0.4
 Percentage of Data= 0.5
