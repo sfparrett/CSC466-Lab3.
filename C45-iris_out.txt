@@ -29,41 +29,41 @@ Time= 4.753879871999999s
 
 Threshold = 0.05
 Number of folds = 3
-                   C Iris-setosa  C Iris-versicolor  C Iris-virginica
-A Iris-setosa                 50                  0                 0
-A Iris-versicolor              0                 50                 0
-A Iris-virginica               0                  0                50
+                   C Iris-virginica  C Iris-setosa  C Iris-versicolor
+A Iris-virginica                 13              0                  5
+A Iris-setosa                     0             16                  1
+A Iris-versicolor                 1              2                 12
 Totals: 
-Overall Accuracy:  0.9844444444444445
-Individual accuracies:  [0.9533333333333334, 1.0, 1.0]
-Average accuracy:  0.9844444444444443
-Time= 16.080244835000002s
+Overall Accuracy:  0.8466666666666667
+Individual accuracies:  [0.88, 0.84, 0.82]
+Average accuracy:  0.8466666666666667
+Time= 15.572373526999998s
 
 
 Threshold = 0.05
 Number of folds = 5
-                   C Iris-versicolor  C Iris-setosa  C Iris-virginica
-A Iris-versicolor                 50              0                 0
-A Iris-setosa                      0             50                 0
-A Iris-virginica                   0              0                50
+                   C Iris-virginica  C Iris-versicolor  C Iris-setosa
+A Iris-virginica                 13                  1              0
+A Iris-versicolor                 0                 10              0
+A Iris-setosa                     0                  0              6
 Totals: 
-Overall Accuracy:  0.9946666666666667
-Individual accuracies:  [0.9733333333333334, 1.0, 1.0, 1.0, 1.0]
-Average accuracy:  0.9946666666666667
-Time= 21.962767631s
+Overall Accuracy:  0.9
+Individual accuracies:  [0.8333333333333334, 0.9333333333333333, 0.9, 0.8666666666666667, 0.9666666666666667]
+Average accuracy:  0.9
+Time= 30.704467994999998s
 
 
 Threshold = 0.05
 Number of folds = 10
-                   C Iris-setosa  C Iris-versicolor  C Iris-virginica
-A Iris-setosa                 50                  0                 0
-A Iris-versicolor              0                 50                 0
-A Iris-virginica               0                  0                50
+                   C Iris-virginica  C Iris-versicolor  C Iris-setosa
+A Iris-virginica                  5                  2              0
+A Iris-versicolor                 0                  6              0
+A Iris-setosa                     0                  0              2
 Totals: 
-Overall Accuracy:  1.0
-Individual accuracies:  [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
-Average accuracy:  1.0
-Time= 49.661587144s
+Overall Accuracy:  0.8866666666666667
+Individual accuracies:  [0.8666666666666667, 0.8, 0.9333333333333333, 0.9333333333333333, 0.9333333333333333, 1.0, 0.8666666666666667, 0.8666666666666667, 0.8, 0.8666666666666667]
+Average accuracy:  0.8866666666666669
+Time= 57.748749091s
 
 
 Threshold = 0.07
@@ -159,41 +159,41 @@ Time= 4.46858464799999s
 
 Threshold = 0.1
 Number of folds = 3
-                   C Iris-setosa  C Iris-versicolor  C Iris-virginica
-A Iris-setosa                 50                  0                 0
-A Iris-versicolor              0                 50                 0
-A Iris-virginica               0                  0                50
+                   C Iris-virginica  C Iris-versicolor  C Iris-setosa
+A Iris-virginica                 17                  2              0
+A Iris-versicolor                 5                 11              0
+A Iris-setosa                     0                  0             15
 Totals: 
-Overall Accuracy:  0.9866666666666667
-Individual accuracies:  [0.96, 1.0, 1.0]
-Average accuracy:  0.9866666666666667
-Time= 14.789129671000012s
+Overall Accuracy:  0.8733333333333333
+Individual accuracies:  [0.88, 0.88, 0.86]
+Average accuracy:  0.8733333333333334
+Time= 13.880477917999997s
 
 
 Threshold = 0.1
 Number of folds = 5
-                   C Iris-versicolor  C Iris-setosa  C Iris-virginica
-A Iris-versicolor                 50              0                 0
-A Iris-setosa                      0             50                 0
-A Iris-virginica                   0              0                50
+                   C Iris-setosa  C Iris-virginica  C Iris-versicolor
+A Iris-setosa                 12                 0                  0
+A Iris-virginica               0                11                  0
+A Iris-versicolor              1                 1                  5
 Totals: 
-Overall Accuracy:  0.9906666666666667
-Individual accuracies:  [0.9533333333333334, 1.0, 1.0, 1.0, 1.0]
-Average accuracy:  0.9906666666666666
-Time= 24.716401319s
+Overall Accuracy:  0.8666666666666667
+Individual accuracies:  [0.8666666666666667, 0.7666666666666667, 0.8666666666666667, 0.9, 0.9333333333333333]
+Average accuracy:  0.8666666666666666
+Time= 30.953598526999997s
 
 
 Threshold = 0.1
 Number of folds = 10
-                   C Iris-versicolor  C Iris-setosa  C Iris-virginica
-A Iris-versicolor                 50              0                 0
-A Iris-setosa                      0             50                 0
-A Iris-virginica                   0              0                50
+                   C Iris-versicolor  C Iris-virginica  C Iris-setosa
+A Iris-versicolor                  7                 0              0
+A Iris-virginica                   1                 4              0
+A Iris-setosa                      0                 0              3
 Totals: 
-Overall Accuracy:  0.9986666666666667
-Individual accuracies:  [0.9866666666666667, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
-Average accuracy:  0.9986666666666666
-Time= 44.08142125400002s
+Overall Accuracy:  0.8466666666666667
+Individual accuracies:  [0.8, 0.8, 0.8666666666666667, 0.7333333333333333, 0.8666666666666667, 0.9333333333333333, 0.7333333333333333, 1.0, 0.8, 0.9333333333333333]
+Average accuracy:  0.8466666666666667
+Time= 93.91544984699999s
 
 
 Threshold = 0.2
@@ -224,103 +224,38 @@ Time= 4.783751669000026s
 
 Threshold = 0.2
 Number of folds = 3
-                   C Iris-versicolor  C Iris-setosa  C Iris-virginica
-A Iris-versicolor                 49              0                 1
-A Iris-setosa                      0             50                 0
-A Iris-virginica                   0              0                50
+                   C Iris-setosa  C Iris-versicolor  C Iris-virginica
+A Iris-setosa                 20                  0                 0
+A Iris-versicolor              0                 12                 5
+A Iris-virginica               0                  2                11
 Totals: 
-Overall Accuracy:  0.9755555555555555
-Individual accuracies:  [0.94, 0.9933333333333333, 0.9933333333333333]
-Average accuracy:  0.9755555555555554
-Time= 11.586500272000023s
+Overall Accuracy:  0.8666666666666667
+Individual accuracies:  [0.86, 0.88, 0.86]
+Average accuracy:  0.8666666666666667
+Time= 13.766649116000025s
 
 
 Threshold = 0.2
 Number of folds = 5
-                   C Iris-versicolor  C Iris-setosa  C Iris-virginica
-A Iris-versicolor                 49              0                 1
-A Iris-setosa                      0             50                 0
-A Iris-virginica                   0              0                50
+                   C Iris-virginica  C Iris-versicolor  C Iris-setosa
+A Iris-virginica                 13                  0              0
+A Iris-versicolor                 3                  8              0
+A Iris-setosa                     0                  0              6
 Totals: 
-Overall Accuracy:  0.9853333333333333
-Individual accuracies:  [0.9533333333333334, 0.9933333333333333, 0.9933333333333333, 0.9933333333333333, 0.9933333333333333]
-Average accuracy:  0.9853333333333334
-Time= 20.565664368s
+Overall Accuracy:  0.8866666666666667
+Individual accuracies:  [0.8333333333333334, 0.8333333333333334, 0.9333333333333333, 0.9333333333333333, 0.9]
+Average accuracy:  0.8866666666666667
+Time= 27.71429058000001s
 
 
 Threshold = 0.2
 Number of folds = 10
-                   C Iris-setosa  C Iris-versicolor  C Iris-virginica
-A Iris-setosa                 50                  0                 0
-A Iris-versicolor              0                 49                 1
-A Iris-virginica               0                  0                50
+                   C Iris-virginica  C Iris-versicolor  C Iris-setosa
+A Iris-virginica                  6                  2              0
+A Iris-versicolor                 1                  3              0
+A Iris-setosa                     0                  0              3
 Totals: 
-Overall Accuracy:  0.992
-Individual accuracies:  [0.98, 0.9933333333333333, 0.9933333333333333, 0.9933333333333333, 0.9933333333333333, 0.9933333333333333, 0.9933333333333333, 0.9933333333333333, 0.9933333333333333, 0.9933333333333333]
-Average accuracy:  0.992
-Time= 42.47904417299998s
-
-
-Threshold = 0.5
-Number of folds = 0
-                   C Iris-setosa  C Iris-versicolor  C Iris-virginica
-A Iris-setosa                 50                  0                 0
-A Iris-versicolor              0                 46                 4
-A Iris-virginica               0                  0                50
-Totals: 
-Overall Accuracy:  0.9733333333333334
-Individual accuracies:  [0.9733333333333334]
-Average accuracy:  0.9733333333333334
-Time= 3.8195674880000183s
-
-
-Threshold = 0.5
-Number of folds = 1
-                   C Iris-setosa  C Iris-versicolor  C Iris-virginica
-A Iris-setosa                 50                  0                 0
-A Iris-versicolor              0                 46                 4
-A Iris-virginica               0                  0                50
-Totals: 
-Overall Accuracy:  0.9733333333333334
-Individual accuracies:  [0.9733333333333334]
-Average accuracy:  0.9733333333333334
-Time= 3.9519421730000204s
-
-
-Threshold = 0.5
-Number of folds = 3
-                   C Iris-setosa  C Iris-versicolor  C Iris-virginica
-A Iris-setosa                 50                  0                 0
-A Iris-versicolor              0                 46                 4
-A Iris-virginica               0                  0                50
-Totals: 
-Overall Accuracy:  0.9511111111111111
-Individual accuracies:  [0.9066666666666666, 0.9733333333333334, 0.9733333333333334]
-Average accuracy:  0.9511111111111111
-Time= 13.547181827000031s
-
-
-Threshold = 0.5
-Number of folds = 5
-                   C Iris-setosa  C Iris-versicolor  C Iris-virginica
-A Iris-setosa                 50                  0                 0
-A Iris-versicolor              0                 46                 4
-A Iris-virginica               0                  0                50
-Totals: 
-Overall Accuracy:  0.968
-Individual accuracies:  [0.9466666666666667, 0.9733333333333334, 0.9733333333333334, 0.9733333333333334, 0.9733333333333334]
-Average accuracy:  0.9680000000000002
-Time= 21.081255391000013s
-
-
-Threshold = 0.5
-Number of folds = 10
-                   C Iris-versicolor  C Iris-setosa  C Iris-virginica
-A Iris-versicolor                 46              0                 4
-A Iris-setosa                      0             50                 0
-A Iris-virginica                   0              0                50
-Totals: 
-Overall Accuracy:  0.9713333333333334
-Individual accuracies:  [0.9533333333333334, 0.9733333333333334, 0.9733333333333334, 0.9733333333333334, 0.9733333333333334, 0.9733333333333334, 0.9733333333333334, 0.9733333333333334, 0.9733333333333334, 0.9733333333333334]
-Average accuracy:  0.9713333333333335
-Time= 39.310750138s
+Overall Accuracy:  0.8866666666666667
+Individual accuracies:  [0.8666666666666667, 0.8666666666666667, 0.8666666666666667, 0.9333333333333333, 1.0, 0.8666666666666667, 0.8666666666666667, 0.9333333333333333, 0.8666666666666667, 0.8]
+Average accuracy:  0.8866666666666669
+Time= 59.33117533699999s
