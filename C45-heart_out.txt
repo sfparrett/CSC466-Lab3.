@@ -1,241 +1,178 @@
 C45 heart.csv: 
 
 
-Threshold = 0.3
+Threshold = 0.05
 Number of folds = 0
        C 1.0  C 0.0
 A 1.0    508      0
-A 0.0    410      0
+A 0.0      1    409
 Totals: 
-Overall Accuracy:  0.5533769063180828
-Individual accuracies:  [0.5533769063180828]
-Average accuracy:  0.5533769063180828
-Time= 0.5600308219999999s
+Overall Accuracy:  0.9989106753812637
+Individual accuracies:  [0.9989106753812637]
+Average accuracy:  0.9989106753812637
+Time= 316.51988886299995s
 
 
-Threshold = 0.3
+Threshold = 0.05
 Number of folds = 1
        C 1.0  C 0.0
 A 1.0    508      0
-A 0.0    410      0
+A 0.0      1    409
 Totals: 
-Overall Accuracy:  0.5533769063180828
-Individual accuracies:  [0.5533769063180828]
-Average accuracy:  0.5533769063180828
-Time= 0.5538623180000002s
+Overall Accuracy:  0.9989106753812637
+Individual accuracies:  [0.9989106753812637]
+Average accuracy:  0.9989106753812637
+Time= 423.253822453s
 
 
-Threshold = 0.3
+Threshold = 0.05
 Number of folds = 3
        C 1.0  C 0.0
-A 1.0    508      0
-A 0.0    410      0
+A 1.0    108     71
+A 0.0     57     70
 Totals: 
-Overall Accuracy:  0.640159767610748
-Individual accuracies:  [0.8137254901960784, 0.5533769063180828, 0.5533769063180828]
-Average accuracy:  0.640159767610748
-Time= 2.2347784070000003s
+Overall Accuracy:  0.5976008724100327
+Individual accuracies:  [0.5901639344262295, 0.6209150326797386, 0.5816993464052288]
+Average accuracy:  0.5975927711703989
+Time= 1220.245287016s
 
 
-Threshold = 0.3
+Threshold = 0.05
 Number of folds = 5
        C 1.0  C 0.0
-A 1.0    508      0
-A 0.0    410      0
+A 1.0     77     23
+A 0.0     34     48
 Totals: 
-Overall Accuracy:  0.5533769063180828
-Individual accuracies:  [0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828]
-Average accuracy:  0.5533769063180828
-Time= 2.5608746590000004s
+Overall Accuracy:  0.6154684095860566
+Individual accuracies:  [0.6304347826086957, 0.6304347826086957, 0.5434782608695652, 0.5869565217391305, 0.6868131868131868]
+Average accuracy:  0.6156235069278548
+Time= 2011.9236022179998s
 
 
-Threshold = 0.3
+Threshold = 0.05
 Number of folds = 10
        C 1.0  C 0.0
-A 1.0    508      0
-A 0.0    410      0
+A 1.0     36     13
+A 0.0     21     20
 Totals: 
-Overall Accuracy:  0.5533769063180828
-Individual accuracies:  [0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828]
-Average accuracy:  0.5533769063180828
-Time= 5.190253640999999s
+Overall Accuracy:  0.6143790849673203
+Individual accuracies:  [0.5978260869565217, 0.5543478260869565, 0.6304347826086957, 0.6195652173913043, 0.6847826086956522, 0.5434782608695652, 0.6304347826086957, 0.6086956521739131, 0.6521739130434783, 0.6222222222222222]
+Average accuracy:  0.6143961352657005
+Time= 3557.2290896100003s
 
-
-Threshold = 0.5
+Threshold = 0.1
 Number of folds = 0
        C 1.0  C 0.0
-A 1.0    508      0
-A 0.0    410      0
+A 1.0    504      4
+A 0.0     20    390
 Totals: 
-Overall Accuracy:  0.5533769063180828
-Individual accuracies:  [0.5533769063180828]
-Average accuracy:  0.5533769063180828
-Time= 0.5142057299999987s
+Overall Accuracy:  0.9738562091503268
+Individual accuracies:  [0.9738562091503268]
+Average accuracy:  0.9738562091503268
+Time= 319.485951969s
 
 
-Threshold = 0.5
+Threshold = 0.1
 Number of folds = 1
        C 1.0  C 0.0
-A 1.0    508      0
-A 0.0    410      0
+A 1.0    504      4
+A 0.0     20    390
 Totals: 
-Overall Accuracy:  0.5533769063180828
-Individual accuracies:  [0.5533769063180828]
-Average accuracy:  0.5533769063180828
-Time= 0.505731205s
+Overall Accuracy:  0.9738562091503268
+Individual accuracies:  [0.9738562091503268]
+Average accuracy:  0.9738562091503268
+Time= 411.25984654499996s
 
 
-Threshold = 0.5
+Threshold = 0.1
 Number of folds = 3
        C 1.0  C 0.0
-A 1.0    508      0
-A 0.0    410      0
+A 1.0    117     51
+A 0.0     55     82
 Totals: 
-Overall Accuracy:  0.5533769063180828
-Individual accuracies:  [0.5533769063180828, 0.5533769063180828, 0.5533769063180828]
-Average accuracy:  0.5533769063180828
-Time= 1.4868715130000005s
+Overall Accuracy:  0.6379498364231189
+Individual accuracies:  [0.6503267973856209, 0.6111111111111112, 0.6524590163934426]
+Average accuracy:  0.6379656416300582
+Time= 1294.2992918720001s
 
 
-Threshold = 0.5
+Threshold = 0.1
 Number of folds = 5
        C 1.0  C 0.0
-A 1.0    508      0
-A 0.0    410      0
+A 1.0     69     28
+A 0.0     37     48
 Totals: 
-Overall Accuracy:  0.5533769063180828
-Individual accuracies:  [0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828]
-Average accuracy:  0.5533769063180828
-Time= 2.533197889000002s
+Overall Accuracy:  0.604143947655398
+Individual accuracies:  [0.5978260869565217, 0.6358695652173914, 0.5597826086956522, 0.5846994535519126, 0.6428571428571429]
+Average accuracy:  0.6042069714557241
+Time= 1973.750347648s
 
 
-Threshold = 0.5
+Threshold = 0.1
 Number of folds = 10
        C 1.0  C 0.0
-A 1.0    508      0
-A 0.0    410      0
+A 1.0     38     14
+A 0.0     16     22
 Totals: 
-Overall Accuracy:  0.5533769063180828
-Individual accuracies:  [0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828]
-Average accuracy:  0.5533769063180828
-Time= 5.311022906000002s
+Overall Accuracy:  0.6135371179039302
+Individual accuracies:  [0.6847826086956522, 0.6521739130434783, 0.5714285714285714, 0.6195652173913043, 0.532608695652174, 0.6043956043956044, 0.6413043478260869, 0.5869565217391305, 0.5760869565217391, 0.6666666666666666]
+Average accuracy:  0.6
 
-
-Threshold = 0.7
+Threshold = 0.2
 Number of folds = 0
        C 1.0  C 0.0
-A 1.0    508      0
-A 0.0    410      0
+A 1.0    504      4
+A 0.0     20    390
 Totals: 
-Overall Accuracy:  0.5533769063180828
-Individual accuracies:  [0.5533769063180828]
-Average accuracy:  0.5533769063180828
-Time= 0.5461164539999999s
+Overall Accuracy:  0.9738562091503268
+Individual accuracies:  [0.9738562091503268]
+Average accuracy:  0.9738562091503268
+Time= 324.972198181s
 
 
-Threshold = 0.7
+Threshold = 0.2
 Number of folds = 1
        C 1.0  C 0.0
-A 1.0    508      0
-A 0.0    410      0
+A 1.0    504      4
+A 0.0     20    390
 Totals: 
-Overall Accuracy:  0.5533769063180828
-Individual accuracies:  [0.5533769063180828]
-Average accuracy:  0.5533769063180828
-Time= 0.5180559369999997s
+Overall Accuracy:  0.9738562091503268
+Individual accuracies:  [0.9738562091503268]
+Average accuracy:  0.9738562091503268
+Time= 417.3205591899999s
 
 
-Threshold = 0.7
+Threshold = 0.2
 Number of folds = 3
        C 1.0  C 0.0
-A 1.0    508      0
-A 0.0    410      0
+A 1.0    127     64
+A 0.0     47     68
 Totals: 
-Overall Accuracy:  0.5533769063180828
-Individual accuracies:  [0.5533769063180828, 0.5533769063180828, 0.5533769063180828]
-Average accuracy:  0.5533769063180828
-Time= 1.5375401659999994s
+Overall Accuracy:  0.6188389923329682
+Individual accuracies:  [0.6176470588235294, 0.6013289036544851, 0.6372549019607843]
+Average accuracy:  0.6187436214795996
+Time= 1139.6743397620003s
 
 
-Threshold = 0.7
+Threshold = 0.2
 Number of folds = 5
        C 1.0  C 0.0
-A 1.0    508      0
-A 0.0    410      0
+A 1.0     63     30
+A 0.0     43     46
 Totals: 
-Overall Accuracy:  0.5533769063180828
-Individual accuracies:  [0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828]
-Average accuracy:  0.5533769063180828
-Time= 2.5715650500000002s
+Overall Accuracy:  0.6091703056768559
+Individual accuracies:  [0.6793478260869565, 0.6304347826086957, 0.5824175824175825, 0.5543478260869565, 0.5989010989010989]
+Average accuracy:  0.6090898232202581
+Time= 1941.0064207270002s
 
 
-Threshold = 0.7
+Threshold = 0.2
 Number of folds = 10
        C 1.0  C 0.0
-A 1.0    508      0
-A 0.0    410      0
+A 1.0     35     15
+A 0.0     18     22
 Totals: 
-Overall Accuracy:  0.5533769063180828
-Individual accuracies:  [0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828]
-Average accuracy:  0.5533769063180828
-Time= 5.212408310000001s
-
-
-Threshold = 0.9
-Number of folds = 0
-       C 1.0  C 0.0
-A 1.0    508      0
-A 0.0    410      0
-Totals: 
-Overall Accuracy:  0.5533769063180828
-Individual accuracies:  [0.5533769063180828]
-Average accuracy:  0.5533769063180828
-Time= 0.6667739439999991s
-
-
-Threshold = 0.9
-Number of folds = 1
-       C 1.0  C 0.0
-A 1.0    508      0
-A 0.0    410      0
-Totals: 
-Overall Accuracy:  0.5533769063180828
-Individual accuracies:  [0.5533769063180828]
-Average accuracy:  0.5533769063180828
-Time= 0.7354160599999986s
-
-
-Threshold = 0.9
-Number of folds = 3
-       C 1.0  C 0.0
-A 1.0    508      0
-A 0.0    410      0
-Totals: 
-Overall Accuracy:  0.5533769063180828
-Individual accuracies:  [0.5533769063180828, 0.5533769063180828, 0.5533769063180828]
-Average accuracy:  0.5533769063180828
-Time= 2.0887568420000022s
-
-
-Threshold = 0.9
-Number of folds = 5
-       C 1.0  C 0.0
-A 1.0    508      0
-A 0.0    410      0
-Totals: 
-Overall Accuracy:  0.5533769063180828
-Individual accuracies:  [0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828]
-Average accuracy:  0.5533769063180828
-Time= 3.603610984999996s
-
-
-Threshold = 0.9
-Number of folds = 10
-       C 1.0  C 0.0
-A 1.0    508      0
-A 0.0    410      0
-Totals: 
-Overall Accuracy:  0.5533769063180828
-Individual accuracies:  [0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828, 0.5533769063180828]
-Average accuracy:  0.5533769063180828
-Time= 6.728215257000002s
+Overall Accuracy:  0.6067538126361656
+Individual accuracies:  [0.6304347826086957, 0.6304347826086957, 0.5543478260869565, 0.6847826086956522, 0.6521739130434783, 0.5869565217391305, 0.5543478260869565, 0.532608695652174, 0.6086956521739131, 0.6333333333333333]
+Average accuracy:  0.6068115942028985
+Time= 3453.7353795239997s
