@@ -34,21 +34,27 @@ def main():
   #     training_file = "heart.csv" 
 
   #training_file = "iris.data.csv"
-  training_file = "Extra_Example.csv" 
+  #training_file = "Extra_Example.csv" 
   #training_file = "iris.data.csv" 
+  #training_file = "letter-recognition.data.csv"
+  training_file = "crx.data.csv"
+  # training_file = "heart.csv"
+  # training_file = "winequality-red-fixed.csv"
+  # training_file = "winequality-white-fixed.csv"
   print("\n\n\nC45 {}: ".format(training_file))
-  thresholds = [0.05,0.07,0.1]
+  thresholds = [0.05,.07,0.1,.2,.5]
   restrictions_list = []
   is_numeric, D, A = prepare_D(training_file, restrictions_list)
   
+  D.dropna()
+  for i in D.columns:
+    D.drop(D.loc[D[i] == "?"].index, inplace=True)
+
   keys = get_key(True, is_numeric)
   if get_key(True, is_numeric) != None:
     for i in keys:
       D[i] = pd.to_numeric(D[i])
 
-  D.dropna()
-  for i in D.columns:
-    D.drop(D.loc[D[i] == "?"].index, inplace=True)
 
   folds = [0,1,3,5,10]     # [x for x in range(0, 20, 3)]
 

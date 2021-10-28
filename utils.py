@@ -145,7 +145,7 @@ def classifier(D, raw, k, Forest):
     x = D[D.columns[-1]].to_list()
     data = {'Predicted': overall[i], "Real": x}
     df = pd.DataFrame(data)
-    print(df)
+    # print(df)
 
     a = df['Predicted'].to_list()
     b = df['Real'].to_list()
@@ -409,9 +409,9 @@ def C45(is_numeric, D, A, threshold, node, dict_, class_labels):
     
   else:
     Ag, x = selectSplittingAttribute(is_numeric, A,D,threshold, class_labels)
-    print("Ag", Ag)
-    print("x", x)
-    print(type(Ag), type(x))
+    # print("Ag", Ag)
+    # print("x", x)
+    # print(type(Ag), type(x))
  
     if Ag == None:
       c, p = find_most_frequent_label(D)
@@ -421,7 +421,7 @@ def C45(is_numeric, D, A, threshold, node, dict_, class_labels):
       return leaf, leaf_dict 
 
     else:
-      print("Ag: ", Ag)
+      # print("Ag: ", Ag)
       try:
         A.remove(Ag)
       except:
@@ -552,7 +552,7 @@ def selectSplittingAttribute(is_numeric, A,D,threshold, class_labels):
     if is_numeric[A[i]] == True:
 
       x, pA = findBestSplit(D.columns[-1], A[i], D, class_labels) #returns best splitting attribute and calculated pA
-      print("bestsplit ", x, pA)
+      # print("bestsplit ", x, pA)
     else:
       pA = entropy(D, A[i], D.columns[-1])
       x = 'category'
@@ -595,37 +595,32 @@ def entropy_split(e_left, e_right, overall_r_1, overall_r_2):
   return (sum(overall_r_1)/(sum(overall_r_1) + sum(overall_r_2)))*e_left + (sum(overall_r_2)/(sum(overall_r_1) + sum(overall_r_2)))*e_right
 
 def findBestSplit(A, a, data, class_labels):
-  print("\nFind Best Split")
-  print("A", A)
-  print("a",a)
-  print(data)
+  # print("\nFind Best Split")
+  # print("A", A)
+  # print("a",a)
+  # print(data)
 
   n=len(data)
 
   values_2 = np.sort(data[a].unique()).astype(float)
-  values_2 = values_2
-  # if (len(values_2) ==1):
-  #   values_2 = values_2
-  # else:
-  #
-  
-  values_2 = values_2[:-1]
+  if (len(values_2) ==1):
+    values_2 =  values_2
+  else:
+    values_2 = values_2[:-1]
 
-  print("values_2")
-  print(values_2)
+  # print("values_2")
+  # print(values_2)
 
   myAtt = a
 
   splits = np.array([data[data[myAtt] <= i] for i in values_2], dtype=object)
 
   sizes = np.array([len(splits[i]) for i in range(len(values_2))])
-  print("sizes") 
-  print(sizes)
+  # print("sizes") 
+  # print(sizes)
 
- 
-  values = set(data[A].unique())
-  print("values")
-  print(values)
+  # print(class_labels)
+
 
   #print(data.sort_values(by=A).reset_index(drop=True))
   #print(type(data[a][0]))
@@ -633,62 +628,73 @@ def findBestSplit(A, a, data, class_labels):
   #print([data[pd.to_numeric(data[a], errors='coerce') <= i] for i in values_2])
 
   distance = np.array([dict(data[pd.to_numeric(data[a], errors='coerce') <= i][A].value_counts()) for i in values_2])
-  print("distance")
-  print(distance)
+  # print("distance")
+  # print(distance)
 
-  ffff = np.array([dict(Counter(dist) + Counter({x:1 for x in values})) for dist in distance])
-  print("ffff")
-  print(ffff)
+  ffff = np.array([dict(Counter(dist) + Counter({x:1 for x in class_labels})) for dist in distance])
+  # print("ffff")
+  # print(ffff)
 
 
   counts = np.array([{x:fff[x]-1 for x in fff} for fff in ffff])
-  print("left")
-  print(counts)
+  # print("left")
+  # print(counts)
 
-  print('overall')
-  print(class_labels)
+  # print('overall')
+  # print(class_labels)
   class_l = dict(Counter(class_labels) + Counter({x:1 for x in class_labels}))
+  # print("CLASS")
+  # print(class_l)
  
   rrrr = np.array([Counter(class_l) - Counter(i) for i in counts])
   rightSide = np.array([{x:rrr[x]-1 for x in rrr} for rrr in rrrr])
-  print("right")
-  print(rightSide)
+  # print("rightSide: ")
+  # print(rightSide)
  
   counts = np.array([np.array(list(c.values())) for c in counts])
   rightSide = np.array([np.array(list(right.values())) for right in rightSide])
   
- 
+  
 
+  # print("Counts: ")
+  # print(counts)
 
+  # print("right")
+  # print(rightSide)
+  # print("sizes")
+  # print(sizes)
   f = np.array([c/l for c,l in zip(counts, sizes)])
 
+  # sizes_2 = np.flip(sizes, 0)
+  # print(sizes_2)
+  
+  g = (rightSide-np.amin(rightSide))/(np.amax(rightSide)-np.amin(rightSide))
+  #g = np.array([c/l for c,l in zip(rightSide, sizes_2)])
 
-  g = np.array([c/l for c,l in zip(rightSide, n-sizes)])
+  # print("Calculations: ")
+  # print("f")
+  # print(f)
+  # print()
+  # print("sizes/n")
+  # print(sizes/n)
+  # print("(-np.sum(f*np.log2(f, out=np.zeros_like(f), where=(f!=0)), axis = 1)))")
+  # print((-np.sum(f*np.log2(f, out=np.zeros_like(f), where=(f!=0)), axis = 1)))
+  # print()
+  # print("Last Part")
+  # print((sizes/n * (-np.sum(f*np.log2(f, out=np.zeros_like(f), where=(f!=0)), axis = 1))))
 
-  print("Calculations: ")
-  print("f")
-  print(f)
-  print()
-  print("sizes/n")
-  print(sizes/n)
-  print("(-np.sum(f*np.log2(f, out=np.zeros_like(f), where=(f!=0)), axis = 1)))")
-  print((-np.sum(f*np.log2(f, out=np.zeros_like(f), where=(f!=0)), axis = 1)))
-  print()
-  print("Last Part")
-  print((sizes/n * (-np.sum(f*np.log2(f, out=np.zeros_like(f), where=(f!=0)), axis = 1))))
-
-  print()
-  print("Calculations for G: ")
-  print("g")
-  print(g)
-  print()
-  print("sizes/(n-sizes)")
-  print(sizes/(n-sizes))
-  print("-np.sum(g*np.log2(g, out=np.zeros_like(g), where=(g!=0)), axis=1)")
-  print(-np.sum(g*np.log2(g, out=np.zeros_like(g), where=(g!=0)), axis=1))
-  print()
-  print("Last Part")
-  print((sizes/(n-sizes) * -np.sum(g*np.log2(g, out=np.zeros_like(g), where=(g!=0)), axis=1)))
+  # print()
+  # print("Calculations for G: ")
+  # print("g")
+  # print(g)
+  # print()
+  # print("sizes/(n-sizes)")
+  # print(sizes/(n-sizes))
+  # print("-np.sum(g*np.log2(g, out=np.zeros_like(g), where=(g!=0)), axis=1)")
+  # print(-np.sum(g*np.log2(g, out=np.zeros_like(g), where=(g!=0)), axis=1))
+  # print()
+  # print("Last Part")
+  # print((sizes/(n-sizes) * -np.sum(g*np.log2(g, out=np.zeros_like(g), where=(g!=0)), axis=1)))
 
   split_entropies = (sizes/n * (-np.sum(f*np.log2(f, out=np.zeros_like(f), where=(f!=0)), axis = 1)))  +   ((n-sizes)/n * -np.sum(g*np.log2(g, out=np.zeros_like(g), where=(g!=0)), axis=1))
 

@@ -135,7 +135,7 @@ def main():
         for j in range(len(lst)):
             T = T + lst[j][j]
 
-        correct = T
+        correct += T
         accuracy.append(T/total)
         matrix_fin.append(data)
         total_amt += total
