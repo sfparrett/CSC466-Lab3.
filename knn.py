@@ -48,7 +48,7 @@ def prepare_D_knn(training_file, restrictions_list):
 
     return n, D, A
 
-def classifier_knn(D, k, is_numeric):
+def classifier_knn(D, k, is_numeric, class_labels):
     D = D.reset_index(drop=True)
 
     D_num = D[is_numeric[0]]
@@ -90,23 +90,33 @@ def classifier_knn(D, k, is_numeric):
 
     result = df['Real'].value_counts().index.to_list()
 
-    data = matrix(a,b, result)
+    data = matrix(a,b, result, class_labels)
 
     records = len(D)
     
     return records, data, result 
  
 def main():
-    #training_file = "winequality-red-fixed.csv"
-    #training_file = "iris.data.csv"
-    #training_file = "crx.data.csv"
-    training_file = "heart.csv"
-    
-    #training_file = "letter-recognition.data.csv"
-    
-    #KNN 
-    k = 10
-    
+    print("Select a number indicating the training file:")
+    print("\t 1 = iris.data.csv\n\t 2 = letter-recognition.data\n\t 3 = winequality-red-fixed.csv\n\t 4 = winequality-white-fixed.csv\n\t 5 = crx.data.csv \n\t 6 = heart.csv\n")
+    training_file = int(input(""))
+    if training_file == 1: 
+        training_file = "iris.data.csv" 
+    elif training_file == 2: 
+        training_file = "letter-recognition.data.csv"
+    elif training_file == 3: 
+        training_file = "winequality-red-fixed.csv"
+    elif training_file == 4: 
+        training_file = "winequality-white-fixed.csv"
+    elif training_file == 5: 
+        training_file = "crx.data.csv"
+    else: 
+        training_file = "heart.csv" 
+
+    print("K: ")
+    k = int(input(""))
+    k = k +1
+  
     restrictions_list = []
 
     is_numeric, D, A = prepare_D_knn(training_file, restrictions_list)
@@ -124,7 +134,8 @@ def main():
     accuracy = []
 
     for i in range(1,k):
-        records, data, result = classifier_knn(D, i, is_numeric)
+        class_labels = D[D.columns[-1]].value_counts().to_dict()
+        records, data, result = classifier_knn(D, i, is_numeric, class_labels)
         matrix_fin = []
     
         lst = data.values.tolist()

@@ -5,6 +5,7 @@ import json
 import numpy as np
 import random
 from collections import Counter
+from timeit import default_timer as timer
 
 def prepare_D(training_file, restrictions_list): 
     data = pd.read_csv(training_file)
@@ -36,18 +37,17 @@ def is_numeric(D):
   numeric = {}
   for col in D.columns:
     if int(D.at[0,col]) == 0: 
-
       numeric[col] = True 
     else: 
       numeric[col] = False 
 
   return numeric
 
-def find_result(attributes, list_, dict_): 
+def find_result(attributes, list_, dict_, D): 
   result = ""
   if "node" in  dict_.keys():
     node = dict_["node"]
-    result = find_result(attributes, list_,node)
+    result = find_result(attributes, list_,node, D)
   elif "leaf" in  dict_.keys():
     return dict_['leaf']['decision']
     
@@ -61,21 +61,25 @@ def find_result(attributes, list_, dict_):
       second_edge = edges[1]['edge']
       attribute = dict_["var"]
 
-
-      passed_in_value = float(list_[attributes.index(attribute)])
-
+      try:
+        columns = D.columns.to_list()
+        passed_in_value = float(list_[attributes.index(str(attribute))])
+      except:
+        print("Error")
+     
+        sys.exit()
 
       if passed_in_value <= edge_value:
         if first_edge["direction"] == "le": 
-          result =  find_result(attributes, list_, first_edge["node"])
+          result =  find_result(attributes, list_, first_edge["node"], D)
         else: 
-          result =  find_result(attributes, list_,second_edge["node"])
+          result =  find_result(attributes, list_,second_edge["node"], D)
           
       else: 
         if first_edge["direction"] == "gt": 
-          result =  find_result(attributes, list_, first_edge["node"])
+          result =  find_result(attributes, list_, first_edge["node"], D)
         else: 
-          result =  find_result(attributes, list_,second_edge["node"])
+          result =  find_result(attributes, list_,second_edge["node"], D)
 
     else: 
       for edge in edges: 
@@ -84,9 +88,10 @@ def find_result(attributes, list_, dict_):
           if "leaf" in edge_of_interest.keys():
             return  edge['edge']['leaf']['decision']
           else: 
-            result = find_result(attributes, list_,edge_of_interest["node"])
-
-      
+            result = find_result(attributes, list_,edge_of_interest["node"], D)
+  else:
+    result = np.nan
+  
   return result 
 
 def zero_matrix(result):
@@ -104,67 +109,15 @@ def zero_matrix(result):
 
   return data
 
-def matrix(a,b, result):
-  data = zero_matrix(result)
+def matrix(a,b, result, class_labels):
+  data = zero_matrix(class_labels)
+  x=0
   for i, j in zip(a, b):
+    x = x + 1
     data["C "+ str(i)]["A "+ str(j)] = data["C "+ str(i) ]["A "+ str(j)] + 1
   return data
 
-def classifier(D, raw, k, Forest):
-  
-  json_filename = "json_out"
-  f = open(json_filename, "w")
-  json.dump(raw, f)
-  f.close()
-
-  objects = list(D[D.columns[-1]])
-  object_type = list(set(objects))
-  attributes = list(D.iloc[:1])
-
-
-  overall = [[] for _ in range(3)]
-  overall_r = []
-  o_data = []
-  records = len(D)
-
-  for index, row in D.iterrows():
-    passed_row = row.tolist()
-    if len(attributes) != len(passed_row): 
-      print("ERROR")
-      sys.exit()
-
-    result = find_result(attributes, passed_row, raw) 
-    result1 = knn(D, k, index)
-    result2 =  RFClassify(Forest, passed_row)
-
-    overall[0].append(result)
-    overall[1].append(result1)
-    overall[2].append(result2)
-  
-  for i in range(3):
-    x = D[D.columns[-1]].to_list()
-    data = {'Predicted': overall[i], "Real": x}
-    df = pd.DataFrame(data)
-    # print(df)
-
-    a = df['Predicted'].to_list()
-    b = df['Real'].to_list()
-
-    result = df['Real'].value_counts().index.to_list()
-    result2 = df['Predicted'].value_counts().index.to_list()
-
-    for i in result2:
-      if (i not in result):
-        result.append(i)
-
-    data = matrix(a,b, result)
-    o_data.append(data)
-    overall_r.append(result)
-
-  
-  return records, o_data, overall_r
-
-def classifier2(D, raw):
+def classifier2(D, raw, class_labels):
   objects = list(D[D.columns[-1]])
   attributes = list(D.iloc[:1])
 
@@ -172,26 +125,33 @@ def classifier2(D, raw):
   overall_r = []
   o_data = []
   records = len(D)
-
   for index, row in D.iterrows():
     passed_row = row.tolist()
     if len(attributes) != len(passed_row): 
       print("ERROR")
       sys.exit()
-    result = find_result(attributes, passed_row, raw) #C45 implimentation 
+
+
+    result = find_result(attributes, passed_row, raw, D) #C45 implimentation 
+  
+
+    if(result == ''):
+      result = np.nan
     overall.append(result)
 
-
   x = D[D.columns[-1]].to_list()
+
   data = {'Predicted': overall, "Real": x}
   df = pd.DataFrame(data)
+
+  df = df.dropna()
 
   a = df['Predicted'].to_list()
   b = df['Real'].to_list()
 
   result = df['Real'].value_counts().index.to_list()
 
-  data = matrix(a,b, result)
+  data = matrix(a,b, result, class_labels)
   o_data.append(data)
   overall_r.append(result)
 
@@ -213,7 +173,6 @@ def cross_validation2(is_numeric, D, A, n, threshold):
   i = 1 
   result = []
   matrix_fin = []
-  # n = amount of folds 
   while i <= n:
     num = round(overall/n)
     if (num > o_eval or (i - n) == 0):
@@ -224,12 +183,13 @@ def cross_validation2(is_numeric, D, A, n, threshold):
       end = overall
 
     send_rec = D.loc[total_amt:end].reset_index(drop=True)
-    # send rec = amount in the data set, gets smaller every time 3/3 2/3 1/3
+    
 
     if (n == 1):
       send_C45 = send_rec
     else:
       send_C45 = D.drop(range(total_amt,end)).reset_index(drop=True)
+    
 
     before_node = Normal()
     dict_ = {}
@@ -237,12 +197,13 @@ def cross_validation2(is_numeric, D, A, n, threshold):
 
     class_label = D[D.columns[-1]].value_counts().to_dict()
     
-
     node, final_dict = C45(is_numeric, send_C45, Attributes, threshold, before_node, dict_, class_label)  
-    # print(final_dict)
+
     i+=1
 
-    total, data, result = classifier2(D, final_dict)
+    total, data, result = classifier2(send_rec, final_dict, class_label)
+
+    
     matrix_fin = []
     lst = data.values.tolist()
     total = data.values.sum()
@@ -251,143 +212,26 @@ def cross_validation2(is_numeric, D, A, n, threshold):
     for j in range(len(lst)):
       T = T + lst[j][j]
 
+
     correct += T
     accuracy.append(T/total)
     matrix_fin.append(data)
     total_amt += total
 
 
-  # print("Overall Matrix of: C45")
-
-  overall_matrix = zero_matrix(result)
+  overall_matrix = zero_matrix(class_label)
   for j in matrix_fin:
     overall_matrix = overall_matrix.add(j, fill_value=0)
   print(overall_matrix)
 
   print("Totals: ")
-  #print("Total Number of records classified: ", total_amt)
   print("Overall Accuracy: ", correct/total_amt)
   print("Individual accuracies: ", accuracy)
   print("Average accuracy: ", sum(accuracy)/len(accuracy))
 
-# def cross_validation(is_numeric, D, A, n, threshold, m, k_rt, N, k_knn):
-#   D = D.sample(frac = 1).reset_index(drop=True)
-#   overall = len(D)
-#   o_eval = len(D)
-#   correct = [0]*3 
-#   total_amt = 0
-#   accuracy = [[] for _ in range(3)]
-
-#   if(n == 0):
-#     n = 1
-#   elif(n == -1):
-#     n = len(D)
-
-#   i = 1 
-#   # n = amount of folds 
-#   while i <= n:
-#     num = round(overall/n)
-#     if (num > o_eval or (i - n) == 0):
-#       num = o_eval
-#     o_eval = o_eval - num
-#     end = total_amt + num - 1
-#     if (total_amt+num) > overall:
-#       end = overall
-
-#     send_rec = D.loc[total_amt:end].reset_index(drop=True)
-#     # send rec = amount in the data set, gets smaller every time 3/3 2/3 1/3
-#     if (n == 1):
-#       send_C45 = send_rec
-#     else:
-#       send_C45 = D.drop(range(total_amt,end)).reset_index(drop=True)
-
-#     before_node = Normal()
-#     dict_ = {}
-#     Attributes = A.copy()
-
-#     node, final_dict = C45(is_numeric, send_C45, Attributes, threshold, before_node, dict_)  
-
-#     i +=1
-
-#   forest = randomForest(D, A, N, m, k_rt, is_numeric)
-
-#   total, data, result = classifier(D, final_dict, k_knn, forest)
-
-#   names = ["C45", "KNN", "Random Forest"]
-#   matrix_fin = []
-#   for i in range(len(data)):
-#     o_matrix = []
-
-#     lst = data[i].values.tolist()
-
-#     o_matrix.append(data[i])
-#     total = data[i].values.sum()
-
-#     T = 0
-#     for j in range(len(lst)):
-#       T = T + lst[j][j]
-
-    
-#     correct[i] += T
-#     accuracy[i].append(T/total)
-#     matrix_fin.append(o_matrix)
-#   total_amt += total
-
-  # for i in range(3):
-  #   print()
-  #   print("Overall Matrix of: ", names[i])
-
-  #   overall_matrix = zero_matrix(result[i])
-  #   for j in matrix_fin[i]:
-  #     overall_matrix = overall_matrix.add(j, fill_value=0)
-  #   print(overall_matrix)
-
-  #   print()
-  #   print("Totals: ")
-  #   #print("Total Number of records classified: ", total_amt)
-  #   print("Overall Accuracy: ", correct[i]/total_amt)
-  #   print("Individual accuracies: ", accuracy[i])
-  #   print("Average accuracy: ", sum(accuracy[i])/len(accuracy[i]))
-
-def json_file_to_dict(json_file): 
-  with open(json_file) as f:
-    data = json.load(f)
-    return data 
-
-def knn(D, k, index):
-  dist = [0] * len(D)
-  actual = D[D.columns[-1]].to_list()
-  D = D.iloc[:,:-1] 
-  D = D.apply(pd.to_numeric, errors='coerce')
-
-  normalized_df=(D-D.min())/(D.max()-D.min())
-
-  p_classify = normalized_df.iloc[index]
-
-  p_classify = [float(x) for x in p_classify]
-  p_classify = np.array(p_classify)
-
-  for index, row in normalized_df.iterrows():
-    new_row = np.array(row.tolist())
-
-    dist[index] = dist[index] + np.linalg.norm(p_classify-new_row)
-  
-
-  data = {'Distances': dist, "Predictions": actual}
-  df = pd.DataFrame(data)
-
-
-  df = df.sort_values(by=['Distances']).reset_index(drop=True)
-
-  df = df[1:k+1]
-
-  prediction = df["Predictions"].value_counts().index.max()
-
-  return prediction
-
 def C45(is_numeric, D, A, threshold, node, dict_, class_labels):
-  # print("C45")
   best = []
+
   bol, attr = check_home(D, A)
 
   if (bol == True): 
@@ -397,31 +241,25 @@ def C45(is_numeric, D, A, threshold, node, dict_, class_labels):
     else: 
       a = attr 
     leaf_dict = {"leaf": {"decision": a, "p":1}}
-    # print("leaf_dict 1")
     return leaf , leaf_dict   
 
   elif not A:
     c, p = find_most_frequent_label(D)
+ 
     leaf = Leaf(1,c)
     leaf_dict = {"leaf": {"decision": c, "p": p}}
-    # print("leaf_dict 2")
     return leaf , leaf_dict 
     
   else:
     Ag, x = selectSplittingAttribute(is_numeric, A,D,threshold, class_labels)
-    # print("Ag", Ag)
-    # print("x", x)
-    # print(type(Ag), type(x))
- 
+
     if Ag == None:
       c, p = find_most_frequent_label(D)
       leaf = Leaf(1,c)
       leaf_dict = {"leaf": {"decision": c, "p": p}}
-      # print("leaf_dict 3")
       return leaf, leaf_dict 
 
     else:
-      # print("Ag: ", Ag)
       try:
         A.remove(Ag)
       except:
@@ -440,7 +278,6 @@ def C45(is_numeric, D, A, threshold, node, dict_, class_labels):
             leaf = Leaf(1,c)
             leaf_dict = {"leaf": {"decision": c, "p": p}}
             return leaf, leaf_dict  
-            #########################
 
           child, child_dict = C45(is_numeric, data, A, threshold, node, dict_, class_labels)
           edge = Edge(option_labels[i], child)
@@ -470,42 +307,7 @@ def C45(is_numeric, D, A, threshold, node, dict_, class_labels):
             node_dict["node"]['edges'].append(edge_dict)
             
 
-  # print("node_dict", node_dict)
   return node, node_dict
-
-def most_frequent(list_):
-  return max(set(list_), key = list_.count)
-
-def RFClassify(Forest, x):
-  prediction = []
-  for f in Forest: 
-    prediction.append( find_result(f.A, x, f.d,))
-  
-  return most_frequent(prediction)
-  
-def randomForest(D, A, N, m, k, is_numeric, class_labels):
-  forest = []
-  m = int(round(m*len(A)))
-  k = int(round(k*len(D)))
-
-  for i in range(0,N): 
-    AttList = random.sample(A, m)
-    Data =  D.sample(n = k)
-    f = Forest(AttList, Data, 0, is_numeric, class_labels)
-    forest.append(f)
-    i+=1
-    
-  return forest
-
-class Forest: 
-  def __init__(self, A, D,threshold, is_numeric, class_labels): 
-    self.A = A
-    self.D = D
-    self.threshold = threshold
-    node = Normal()
-    d = {}
-    T, d = C45(is_numeric, D, A,threshold,node,d, class_labels)
-    self.d = d
 
 class Leaf:
     def __init__(self,probability, result):
@@ -546,23 +348,24 @@ def find_most_frequent_label(D):
 def selectSplittingAttribute(is_numeric, A,D,threshold, class_labels):
   gain = []
   check = []
+
   p0, option_labels = first_entropy(D, D.columns[-1])
+
+  
   pA = 0
   for i in range(len(A)):
     if is_numeric[A[i]] == True:
-
       x, pA = findBestSplit(D.columns[-1], A[i], D, class_labels) #returns best splitting attribute and calculated pA
-      # print("bestsplit ", x, pA)
-    else:
+
+    else: 
       pA = entropy(D, A[i], D.columns[-1])
       x = 'category'
-    
+      
     check.append(x)
     gain.append(p0 - pA) 
   
   best = max(gain)
-  # print("best", best)
-  # print("threshold", threshold)
+
   if best > threshold:
     mx = A[gain.index(best)]
     x = check[gain.index(best)]
@@ -573,33 +376,7 @@ def selectSplittingAttribute(is_numeric, A,D,threshold, class_labels):
   else:
     return None, None
   
-def compute_e(overall_r_1, overall_r_2, option_labels):
-  e_left = 0
-  e_right = 0 
-  for i in range(len(option_labels)):
-      if (sum(overall_r_1) == 0):
-        left = 0 
-      else:
-        left = overall_r_1[i]/sum(overall_r_1)
-
-      if (sum(overall_r_2) == 0):
-        right = 0 
-      else:
-        right = overall_r_2[i]/sum(overall_r_2)
-      
-      e_left = e_left + log(left)
-      e_right = e_right + log(right)
-  return e_left, e_right
-
-def entropy_split(e_left, e_right, overall_r_1, overall_r_2):
-  return (sum(overall_r_1)/(sum(overall_r_1) + sum(overall_r_2)))*e_left + (sum(overall_r_2)/(sum(overall_r_1) + sum(overall_r_2)))*e_right
-
 def findBestSplit(A, a, data, class_labels):
-  # print("\nFind Best Split")
-  # print("A", A)
-  # print("a",a)
-  # print(data)
-
   n=len(data)
 
   values_2 = np.sort(data[a].unique()).astype(float)
@@ -608,136 +385,35 @@ def findBestSplit(A, a, data, class_labels):
   else:
     values_2 = values_2[:-1]
 
-  # print("values_2")
-  # print(values_2)
-
   myAtt = a
 
   splits = np.array([data[data[myAtt] <= i] for i in values_2], dtype=object)
 
   sizes = np.array([len(splits[i]) for i in range(len(values_2))])
-  # print("sizes") 
-  # print(sizes)
 
-  # print(class_labels)
-
-
-  #print(data.sort_values(by=A).reset_index(drop=True))
-  #print(type(data[a][0]))
-
-  #print([data[pd.to_numeric(data[a], errors='coerce') <= i] for i in values_2])
-
-  distance = np.array([dict(data[pd.to_numeric(data[a], errors='coerce') <= i][A].value_counts()) for i in values_2])
-  # print("distance")
-  # print(distance)
+  distance = np.array([dict(data[data[a] <= i][A].value_counts()) for i in values_2])
 
   ffff = np.array([dict(Counter(dist) + Counter({x:1 for x in class_labels})) for dist in distance])
-  # print("ffff")
-  # print(ffff)
-
 
   counts = np.array([{x:fff[x]-1 for x in fff} for fff in ffff])
-  # print("left")
-  # print(counts)
 
-  # print('overall')
-  # print(class_labels)
   class_l = dict(Counter(class_labels) + Counter({x:1 for x in class_labels}))
-  # print("CLASS")
-  # print(class_l)
- 
+
   rrrr = np.array([Counter(class_l) - Counter(i) for i in counts])
   rightSide = np.array([{x:rrr[x]-1 for x in rrr} for rrr in rrrr])
-  # print("rightSide: ")
-  # print(rightSide)
  
   counts = np.array([np.array(list(c.values())) for c in counts])
   rightSide = np.array([np.array(list(right.values())) for right in rightSide])
   
-  
-
-  # print("Counts: ")
-  # print(counts)
-
-  # print("right")
-  # print(rightSide)
-  # print("sizes")
-  # print(sizes)
   f = np.array([c/l for c,l in zip(counts, sizes)])
 
-  # sizes_2 = np.flip(sizes, 0)
-  # print(sizes_2)
-  
+
+  np.seterr(invalid='ignore')
   g = (rightSide-np.amin(rightSide))/(np.amax(rightSide)-np.amin(rightSide))
-  #g = np.array([c/l for c,l in zip(rightSide, sizes_2)])
-
-  # print("Calculations: ")
-  # print("f")
-  # print(f)
-  # print()
-  # print("sizes/n")
-  # print(sizes/n)
-  # print("(-np.sum(f*np.log2(f, out=np.zeros_like(f), where=(f!=0)), axis = 1)))")
-  # print((-np.sum(f*np.log2(f, out=np.zeros_like(f), where=(f!=0)), axis = 1)))
-  # print()
-  # print("Last Part")
-  # print((sizes/n * (-np.sum(f*np.log2(f, out=np.zeros_like(f), where=(f!=0)), axis = 1))))
-
-  # print()
-  # print("Calculations for G: ")
-  # print("g")
-  # print(g)
-  # print()
-  # print("sizes/(n-sizes)")
-  # print(sizes/(n-sizes))
-  # print("-np.sum(g*np.log2(g, out=np.zeros_like(g), where=(g!=0)), axis=1)")
-  # print(-np.sum(g*np.log2(g, out=np.zeros_like(g), where=(g!=0)), axis=1))
-  # print()
-  # print("Last Part")
-  # print((sizes/(n-sizes) * -np.sum(g*np.log2(g, out=np.zeros_like(g), where=(g!=0)), axis=1)))
 
   split_entropies = (sizes/n * (-np.sum(f*np.log2(f, out=np.zeros_like(f), where=(f!=0)), axis = 1)))  +   ((n-sizes)/n * -np.sum(g*np.log2(g, out=np.zeros_like(g), where=(g!=0)), axis=1))
 
-  # print()
-  # print("Finished")
-  # print(split_entropies)
-  # print(np.argmin(split_entropies))
-  # print(np.min(split_entropies))
-
   return values_2[np.argmin(split_entropies)], np.min(split_entropies)
-
-
-  # entropy1, option_labels = first_entropy(D, A)
-  # if (a == A):
-  #   return entropy1
-
-  # pd.to_numeric(D.loc[:, a])
-  # labels2 = D[a].value_counts().index.tolist()
-  # labels2.sort()
-  # option_labels2 = labels2
-
-  # track_lab = [] #label tracker so we can send back the one that has the best entropy 
-  # track_entro = []
-
-  # for i in range (len(option_labels2)): 
-  #   overall_r_1 = []
-  #   overall_r_2 = []
-  #   for j in range (len(option_labels)): 
-  #     label = option_labels2[i]
-  #     total = int((D[A] == option_labels[j]).sum())
-  #     ratio_1 = len(D.loc[(D[a] <= label) & (D[A] == option_labels[j])].index)
-  #     ratio_2 = total - ratio_1
-  #     overall_r_1.append(ratio_1)
-  #     overall_r_2.append(ratio_2)
-
-  #   e_left, e_right = compute_e(overall_r_1, overall_r_2, option_labels)
-  #   e_overall = entropy_split(e_left, e_right, overall_r_1, overall_r_2)
-  #   track_entro.append(e_overall)
-    
-  # best = min(track_entro)
-  # o_label = option_labels2[track_entro.index(best)]
-  # mx_v = best
-  # return o_label, mx_v 
 
 def first_entropy(D, A):
   labels = list(D[A])
@@ -774,8 +450,8 @@ def log(A):
   return -((A) * x)
 
 def check_home(D, A):
-  d = D[[D.columns[-1]]]
-  results = d.value_counts().index.to_list()
+  d = D[D.columns[-1]]
+  results = list(d.unique())
   if len(results) > 1: 
     return False, False 
   else: 

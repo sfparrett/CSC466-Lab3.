@@ -47,4 +47,14 @@ values = [1,2,3]
 
 here = {x:1 for x in values}
 
+here = pd.DataFrame({'A': [np.nan, 1],'B': [1, 1]})
 print(here)
+here.dropna(inplace=True)
+
+here = here.columns.to_list()
+
+dic = {'Old', 'New'}
+print(list(dic))
+
+print(here)
+print(here.index('A'))
