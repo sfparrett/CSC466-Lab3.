@@ -99,7 +99,8 @@ def classifier_knn(D, k, is_numeric):
 def main():
     #training_file = "winequality-red-fixed.csv"
     #training_file = "iris.data.csv"
-    training_file = "crx.data.csv"
+    #training_file = "crx.data.csv"
+    training_file = "heart.csv"
     
     #training_file = "letter-recognition.data.csv"
     
@@ -122,7 +123,7 @@ def main():
     total_amt = 0
     accuracy = []
 
-    for i in range(2,k):
+    for i in range(1,k):
         records, data, result = classifier_knn(D, i, is_numeric)
         matrix_fin = []
     

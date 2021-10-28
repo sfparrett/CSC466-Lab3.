@@ -7,6 +7,15 @@ from utils import *
 import itertools
 from timeit import default_timer as timer
 
+def get_key(val, my_dict):
+    lst = []
+    for key, value in my_dict.items():
+         if val == value:
+             lst.append(key)
+    if not lst:
+      return None
+    return lst
+
 def main():
   # print("Select a number indicating the training file:")
   # print("\t 1 = iris.data.csv\n\t 2 = letter-recognition.data\n\t 3 = winequality-red-fixed.csv\n\t 4 = winequality-white-fixed.csv\n\t 5 = crx.data.csv \n\t 6 = heart.csv\n")
@@ -24,11 +33,19 @@ def main():
   # else: 
   #     training_file = "heart.csv" 
 
+  #training_file = "iris.data.csv"
   training_file = "Extra_Example.csv" 
+  #training_file = "iris.data.csv" 
   print("\n\n\nC45 {}: ".format(training_file))
   thresholds = [0.05,0.07,0.1]
   restrictions_list = []
   is_numeric, D, A = prepare_D(training_file, restrictions_list)
+  
+  keys = get_key(True, is_numeric)
+  if get_key(True, is_numeric) != None:
+    for i in keys:
+      D[i] = pd.to_numeric(D[i])
+
   D.dropna()
   for i in D.columns:
     D.drop(D.loc[D[i] == "?"].index, inplace=True)
