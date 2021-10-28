@@ -1,0 +1,18 @@
+Random Forest winequality-white-fixed.csv: 
+
+Percentage of Attributes = 0.8
+Percentage of Data= 0.9
+Number of folds = 10
+       C 6.0  C 5.0  C 7.0  C 8.0  C 4.0  C 3.0  C 9.0
+A 6.0    627     35     67      8      5      1      0
+A 5.0    416     36      6      1      5      1      0
+A 7.0    207      3     79      4      5      1      0
+A 8.0     36      1      9     14      1      0      0
+A 4.0     36     10      2      0      7      1      0
+A 3.0      3      0      3      1      0      0      0
+A 9.0      0      0      1      0      0      0      0
+Totals: 
+Overall Accuracy:  0.3466666666666667
+Individual accuracies:  [0.3333333333333333, 0.4, 0.4, 0.0, 0.4666666666666667, 0.26666666666666666, 0.06666666666666667, 0.4, 0.6666666666666666, 0.4666666666666667]
+Average accuracy:  0.3466666666666667
+Time= 16765.0015524959999s

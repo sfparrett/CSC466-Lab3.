@@ -1,0 +1,13 @@
+Random Forest crx.data.csv: 
+
+Percentage of Attributes = 0.8
+Percentage of Data= 0.9
+Number of folds = 10
+      C -  C +
+A -   72   40
+A +   40   63
+Totals: 
+Overall Accuracy:  0.5876923076923077
+Individual accuracies:  [0.5529953917050692, 0.5825688073394495, 0.627906976744186, .4, 0.5199020208205756, 0.4825474586650337, 0.4758113900796081, 0.46356399265156156 0.5543478260869565, 0.6304347826086957]
+Average accuracy:  0.5878237252629016
+Time= 10384.269149559999s
